@@ -1,9 +1,8 @@
 name: Hebrew Debug Build
 
-# Self-contained debug-only build for the Hebrew translation branch.
-# No secrets, no release, no Discord — just builds the FOSS debug APK and
-# uploads it as a workflow artifact. Mirrors the PR path of ci-android.yml,
-# which is known to build without any signing secrets.
+# Builds the Hebrew translation branch as a RELEASE-signed APK plus the
+# flashable root-module ZIP, using our own release keystore provided via
+# repo secrets. No Discord, no GitHub release — artifacts only.
 
 on:
   push:
@@ -29,11 +28,28 @@ jobs:
         run: yes | sdkmanager --licenses
       - name: Install NDK
         run: sdkmanager "ndk;30.0.14904198"
-      - name: Build FOSS debug APK
-        run: ./gradlew assembleFossDebug --stacktrace
+      - name: Decode release keystore
+        run: echo "${{ secrets.RELEASE_KEYSTORE_FILE }}" | base64 --decode > android/release.keystore
+      - name: Create local.properties
+        run: |
+          cat <<EOF > android/local.properties
+          RELEASE_STORE_FILE=../release.keystore
+          RELEASE_STORE_PASSWORD=${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS=${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD=${{ secrets.RELEASE_KEY_PASSWORD }}
+          EOF
+      - name: Build FOSS release APK + root-module ZIP
+        run: ./gradlew assembleFossRelease zipReleaseModule --stacktrace
         working-directory: android
-      - uses: actions/upload-artifact@v4
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
         with:
-          name: apk-foss-debug
-          path: android/app/build/outputs/apk/foss/debug/app-foss-debug.apk
+          name: apk-foss-release
+          path: android/app/build/outputs/apk/foss/release/app-foss-release.apk
+          if-no-files-found: error
+      - name: Upload root-module ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: root-module-release
+          path: android/app/build/outputs/rootModuleZips/*.zip
           if-no-files-found: error
