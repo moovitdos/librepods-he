@@ -11,4 +11,11 @@
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="colorBackground">#FFFFFF</color>
+
+    <!-- Backgrounds of the listening-mode launcher shortcuts (res/xml/shortcuts.xml) -->
+    <color name="shortcut_bg_cycle">#FF5E5CE6</color>
+    <color name="shortcut_bg_anc">#FF0A84FF</color>
+    <color name="shortcut_bg_transparency">#FF30D158</color>
+    <color name="shortcut_bg_adaptive">#FFFF9F0A</color>
+    <color name="shortcut_bg_off">#FF8E8E93</color>
 </resources>

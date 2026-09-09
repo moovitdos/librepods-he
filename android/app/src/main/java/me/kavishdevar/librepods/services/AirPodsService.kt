@@ -98,6 +98,7 @@ import me.kavishdevar.librepods.data.BatteryComponent
 import me.kavishdevar.librepods.data.BatteryStatus
 import me.kavishdevar.librepods.data.Capability
 import me.kavishdevar.librepods.data.CustomEq
+import me.kavishdevar.librepods.data.NoiseControlMode
 import me.kavishdevar.librepods.data.StemAction
 import me.kavishdevar.librepods.data.XposedRemotePrefProvider
 import me.kavishdevar.librepods.data.isHeadTrackingData
@@ -2957,6 +2958,63 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 //            ancNotification.setStatus(CrossDevice.ancBytes)
 //        }
         return ancNotification.status
+    }
+
+    /** True while the AACP control channel to the AirPods is open. */
+    fun isAirPodsConnected(): Boolean {
+        return BluetoothConnectionManager.aacpSocket?.isConnected == true
+    }
+
+    /**
+     * Listening modes the user can switch between, in the order used by the
+     * Quick Settings tile and the home-screen widget:
+     * Off (only if allowed), Transparency, Adaptive, Noise Cancellation.
+     * Values are the AACP listening-mode bytes (1 = Off, 2 = ANC, 3 = Transparency, 4 = Adaptive).
+     */
+    fun getAvailableNoiseControlModes(): List<Int> {
+        val allowOffModeValue = if (::aacpManager.isInitialized) {
+            aacpManager.controlCommandStatusList.find { it.identifier == AACPManager.Companion.ControlCommandIdentifiers.ALLOW_OFF_OPTION }
+        } else null
+        val allowOffMode =
+            allowOffModeValue?.value?.takeIf { it.isNotEmpty() }?.get(0) == 0x01.toByte() || sharedPreferences.getBoolean("off_listening_mode", true)
+        return buildList {
+            if (allowOffMode) add(NoiseControlMode.OFF.ordinal + 1)
+            add(NoiseControlMode.TRANSPARENCY.ordinal + 1)
+            add(NoiseControlMode.ADAPTIVE.ordinal + 1)
+            add(NoiseControlMode.NOISE_CANCELLATION.ordinal + 1)
+        }
+    }
+
+    /**
+     * Sets the listening mode (1 = Off, 2 = ANC, 3 = Transparency, 4 = Adaptive).
+     * Shared entry point for the Quick Settings tile, the launcher shortcuts and
+     * the external intent API. Returns false when the AirPods are not connected
+     * or the mode is out of range.
+     */
+    fun setNoiseControlMode(mode: Int): Boolean {
+        if (mode !in 1..4 || !::aacpManager.isInitialized || !isAirPodsConnected()) {
+            Log.w(TAG, "setNoiseControlMode($mode) ignored: connected=${isAirPodsConnected()}")
+            return false
+        }
+        Log.d(TAG, "Setting listening mode to $mode")
+        aacpManager.sendControlCommand(
+            AACPManager.Companion.ControlCommandIdentifiers.LISTENING_MODE.value,
+            mode
+        )
+        return true
+    }
+
+    /**
+     * Switches to the next listening mode, the same way a tap on the Quick
+     * Settings tile does. Returns the mode that was requested, or null when the
+     * AirPods are not connected.
+     */
+    fun cycleNoiseControlMode(): Int? {
+        val modes = getAvailableNoiseControlModes()
+        val current = getANC()
+        val nextMode = modes[(modes.indexOf(current) + 1) % modes.size]
+        Log.d(TAG, "Cycling listening mode from $current to $nextMode (available: $modes)")
+        return if (setNoiseControlMode(nextMode)) nextMode else null
     }
 
     fun disconnectAudio(context: Context, device: BluetoothDevice?) {

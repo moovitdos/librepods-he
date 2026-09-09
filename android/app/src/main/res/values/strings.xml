@@ -351,6 +351,10 @@
     <string name="qs_loading">Loading...</string>
     <string name="qs_noise_cancel_short">Noise Cancel</string>
     <string name="qs_mode_unknown">Unknown</string>
+    <string name="shortcut_cycle_short">Switch mode</string>
+    <string name="shortcut_cycle_long">Switch listening mode</string>
+    <string name="shortcut_mode_set">Listening mode: %1$s</string>
+    <string name="shortcut_invalid_mode">Unknown listening mode: %1$s</string>
     <string name="head_tracking_velocity">Velocity</string>
     <string name="head_tracking_yes_gesture_detected">\"Yes\" gesture detected.</string>
     <string name="head_tracking_no_gesture_detected">\"No\" gesture detected.</string>

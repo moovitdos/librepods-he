@@ -35,7 +35,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import me.kavishdevar.librepods.QuickSettingsDialogActivity
 import me.kavishdevar.librepods.R
-import me.kavishdevar.librepods.bluetooth.AACPManager
 import me.kavishdevar.librepods.bluetooth.BluetoothConnectionManager
 import me.kavishdevar.librepods.data.AirPodsNotifications
 import me.kavishdevar.librepods.data.NoiseControlMode
@@ -193,12 +192,9 @@ class AirPodsQSService : TileService() {
             Log.d("AirPodsQSService", "Tile clicked (cycle mode) but service is null.")
             return
         }
-        val nextMode = getNextAncMode()
+        // Same code path as the launcher shortcuts / external intent API.
+        val nextMode = service.cycleNoiseControlMode()
         Log.d("AirPodsQSService", "Cycling ANC mode to: $nextMode")
-        service.aacpManager.sendControlCommand(
-            AACPManager.Companion.ControlCommandIdentifiers.LISTENING_MODE.value,
-            nextMode
-        )
     }
 
     private fun updateTile() {
@@ -229,27 +225,6 @@ class AirPodsQSService : TileService() {
 
     private fun isOffModeEnabled(): Boolean {
         return sharedPreferences.getBoolean("off_listening_mode", true)
-    }
-
-    private fun getAvailableModes(): List<Int> {
-        val modes = mutableListOf(
-            NoiseControlMode.TRANSPARENCY.ordinal + 1,
-            NoiseControlMode.ADAPTIVE.ordinal + 1,
-            NoiseControlMode.NOISE_CANCELLATION.ordinal + 1
-        )
-        if (isOffModeEnabled()) {
-            modes.add(0, NoiseControlMode.OFF.ordinal + 1)
-        }
-        return modes
-    }
-
-    private fun getNextAncMode(): Int {
-        val availableModes = getAvailableModes()
-        Log.d("AirPodsQSService", "availableModes: $availableModes, currentAncMode: $currentAncMode")
-        val currentIndex = availableModes.indexOf(currentAncMode)
-        val nextIndex = (currentIndex + 1) % availableModes.size
-        Log.d("AirPodsQSService", "nextIndex: $nextIndex")
-        return availableModes[nextIndex]
     }
 
     private fun getModeLabel(mode: Int): String {

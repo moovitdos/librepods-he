@@ -27,6 +27,17 @@
         <item name="android:windowBlurBehindRadius" tools:targetApi="s">32dp</item> <!-- Optional: Adjust radius -->
     </style>
 
+    <!-- Fully invisible theme for NoiseControlShortcutActivity: no window, no dim, no animation -->
+    <style name="Theme.NoiseControlShortcut" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
   <style name="Theme.LibrePods.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
     <item name="appWidgetRadius">32dp</item>
     <item name="appWidgetPadding">0dp</item>

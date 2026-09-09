@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Static launcher shortcuts: long-press the LibrePods icon to see them, or drag
+    one onto the home screen. Every shortcut opens NoiseControlShortcutActivity,
+    which switches the listening mode and closes itself immediately.
+    Launchers usually display only the first four entries, so "Off" is last.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="noise_control_cycle"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_cycle"
+        android:shortcutShortLabel="@string/shortcut_cycle_short"
+        android:shortcutLongLabel="@string/shortcut_cycle_long">
+        <intent
+            android:action="me.kavishdevar.librepods.SET_ANC_MODE"
+            android:targetPackage="me.kavishdevar.librepods"
+            android:targetClass="me.kavishdevar.librepods.NoiseControlShortcutActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="noise_control_anc"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_anc"
+        android:shortcutShortLabel="@string/noise_cancellation"
+        android:shortcutLongLabel="@string/noise_cancellation">
+        <intent
+            android:action="me.kavishdevar.librepods.SET_ANC_MODE"
+            android:targetPackage="me.kavishdevar.librepods"
+            android:targetClass="me.kavishdevar.librepods.NoiseControlShortcutActivity">
+            <extra
+                android:name="mode"
+                android:value="anc" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="noise_control_transparency"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_transparency"
+        android:shortcutShortLabel="@string/transparency"
+        android:shortcutLongLabel="@string/transparency">
+        <intent
+            android:action="me.kavishdevar.librepods.SET_ANC_MODE"
+            android:targetPackage="me.kavishdevar.librepods"
+            android:targetClass="me.kavishdevar.librepods.NoiseControlShortcutActivity">
+            <extra
+                android:name="mode"
+                android:value="transparency" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="noise_control_adaptive"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_adaptive"
+        android:shortcutShortLabel="@string/adaptive"
+        android:shortcutLongLabel="@string/adaptive">
+        <intent
+            android:action="me.kavishdevar.librepods.SET_ANC_MODE"
+            android:targetPackage="me.kavishdevar.librepods"
+            android:targetClass="me.kavishdevar.librepods.NoiseControlShortcutActivity">
+            <extra
+                android:name="mode"
+                android:value="adaptive" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="noise_control_off"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_off"
+        android:shortcutShortLabel="@string/off"
+        android:shortcutLongLabel="@string/off">
+        <intent
+            android:action="me.kavishdevar.librepods.SET_ANC_MODE"
+            android:targetPackage="me.kavishdevar.librepods"
+            android:targetClass="me.kavishdevar.librepods.NoiseControlShortcutActivity">
+            <extra
+                android:name="mode"
+                android:value="off" />
+        </intent>
+    </shortcut>
+
+</shortcuts>

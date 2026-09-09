@@ -95,6 +95,41 @@
                 <data android:scheme="librepods"
                     android:host="add-magic-keys" />
             </intent-filter> -->
+
+            <!-- Long-press launcher shortcuts for switching the listening mode -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <!--
+            Invisible trampoline that switches the listening mode and closes.
+            Exported on purpose: launcher shortcuts, Tasker/MacroDroid/Key Mapper,
+            NFC tags and `adb shell am start` all go through here.
+            Optional extra "mode": off | anc | transparency | adaptive | 1-4. No extra = cycle.
+        -->
+        <activity
+            android:name=".NoiseControlShortcutActivity"
+            android:exported="true"
+            android:label="@string/shortcut_cycle_long"
+            android:icon="@drawable/ic_shortcut_cycle"
+            android:theme="@style/Theme.NoiseControlShortcut"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="me.kavishdevar.librepods.SET_ANC_MODE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="librepods"
+                    android:host="noise-control" />
+            </intent-filter>
         </activity>
 
         <activity

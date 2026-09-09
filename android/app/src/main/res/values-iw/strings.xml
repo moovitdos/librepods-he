@@ -350,6 +350,10 @@
     <string name="qs_loading">טוען...</string>
     <string name="qs_noise_cancel_short">ביטול רעשים</string>
     <string name="qs_mode_unknown">לא ידוע</string>
+    <string name="shortcut_cycle_short">החלף מצב</string>
+    <string name="shortcut_cycle_long">החלפת מצב האזנה</string>
+    <string name="shortcut_mode_set">מצב האזנה: %1$s</string>
+    <string name="shortcut_invalid_mode">מצב האזנה לא מוכר: %1$s</string>
     <string name="head_tracking_velocity">מהירות</string>
     <string name="head_tracking_yes_gesture_detected">זוהתה מחוות \"כן\".</string>
     <string name="head_tracking_no_gesture_detected">זוהתה מחוות \"לא\".</string>
