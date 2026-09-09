@@ -1844,7 +1844,9 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     }
 
     fun setBatteryMetadata() {
-        if (checkSelfPermission("android.permission.BLUETOOTH_PRIVILEGED") != PackageManager.PERMISSION_GRANTED) {
+        // Battery metadata (system battery indicator) requires BLUETOOTH_PRIVILEGED; the
+        // check was inverted, so it only ran on installs where setMetadata cannot work.
+        if (checkSelfPermission("android.permission.BLUETOOTH_PRIVILEGED") == PackageManager.PERMISSION_GRANTED) {
             device?.let { it ->
                 SystemApisUtils.setMetadata(
                     it,
