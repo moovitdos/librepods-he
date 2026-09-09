@@ -54,8 +54,11 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // R8 minification disabled: on Android 13 the obfuscated @Parcelize Battery class
+            // makes Intent.getParcelableArrayListExtra(...) NPE in Parcel.readParcelableCreatorInternal
+            // (upstream librepods-org/librepods#592). Keep rules in proguard-rules.pro cover it if re-enabled.
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )

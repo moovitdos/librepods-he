@@ -21,3 +21,14 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class me.kavishdevar.librepods.utils.KotlinModule { *; }
+
+# --- Android 13 Parcelable crash (librepods-org/librepods#592) ---
+# Intent.getParcelableArrayListExtra("data", Battery::class.java) NPEs in
+# Parcel.readParcelableCreatorInternal when the @Parcelize class is obfuscated.
+-keep class me.kavishdevar.librepods.data.** { *; }
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+}
+# Navigation routes are @Serializable and matched by class identity
+-keep class me.kavishdevar.librepods.presentation.navigation.Screen** { *; }
+-keepattributes *Annotation*, InnerClasses, Signature, EnclosingMethod
