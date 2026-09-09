@@ -136,7 +136,7 @@ fun OnboardingScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            text = "Welcome to",
+                                            text = "ברוכים הבאים אל",
                                             style = MaterialTheme.typography.displayLarge,
                                             color = MaterialTheme.colorScheme.primary,
                                             textAlign = TextAlign.Center,

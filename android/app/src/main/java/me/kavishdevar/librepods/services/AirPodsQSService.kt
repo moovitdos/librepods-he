@@ -215,7 +215,7 @@ class AirPodsQSService : TileService() {
         } else {
             tile.state = Tile.STATE_UNAVAILABLE
             tile.label = "AirPods"
-            tile.subtitle = "Disconnected"
+            tile.subtitle = "מנותק"
             tile.icon = Icon.createWithResource(this, R.drawable.airpods)
         }
 
@@ -254,11 +254,11 @@ class AirPodsQSService : TileService() {
 
     private fun getModeLabel(mode: Int): String {
         return when (mode) {
-            NoiseControlMode.OFF.ordinal + 1 -> "Off"
-            NoiseControlMode.TRANSPARENCY.ordinal + 1 -> "Transparency"
-            NoiseControlMode.ADAPTIVE.ordinal + 1 -> "Adaptive"
-            NoiseControlMode.NOISE_CANCELLATION.ordinal + 1 -> "Noise Cancellation"
-            else -> "Unknown"
+            NoiseControlMode.OFF.ordinal + 1 -> "כבוי"
+            NoiseControlMode.TRANSPARENCY.ordinal + 1 -> "שקיפות"
+            NoiseControlMode.ADAPTIVE.ordinal + 1 -> "מותאם"
+            NoiseControlMode.NOISE_CANCELLATION.ordinal + 1 -> "ביטול רעשים"
+            else -> "לא ידוע"
         }
     }
 

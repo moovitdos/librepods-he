@@ -1735,13 +1735,13 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     fun startForegroundNotification() {
         val disconnectedNotificationChannel = NotificationChannel(
             "background_service_status",
-            "Background Service Status",
+            "מצב שירות רקע",
             NotificationManager.IMPORTANCE_NONE
         )
 
         val connectedNotificationChannel = NotificationChannel(
             "airpods_connection_status",
-            "AirPods Connection Status",
+            "מצב חיבור AirPods",
             NotificationManager.IMPORTANCE_LOW,
         )
 
@@ -1750,7 +1750,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             "AirPods BluetoothConnectionManager.aacpSocket? Connection Issues",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "Notifications about problems connecting to AirPods protocol"
+            description = "התראות על בעיות בהתחברות לפרוטוקול של AirPods"
             enableLights(true)
             lightColor = Color.RED
             enableVibration(true)
@@ -1774,8 +1774,8 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         )
 
         val notification = NotificationCompat.Builder(this, "background_service_status")
-            .setSmallIcon(R.drawable.airpods).setContentTitle("Background Service Running")
-            .setContentText("Useless notification, disable it by clicking on it.")
+            .setSmallIcon(R.drawable.airpods).setContentTitle("שירות רקע פועל")
+            .setContentText("התראה חסרת תועלת, לחצו עליה כדי להשבית אותה.")
             .setContentIntent(pendingIntentNotifDisable).setCategory(Notification.CATEGORY_SERVICE)
             .setPriority(NotificationCompat.PRIORITY_LOW).setOngoing(true).build()
 
@@ -2153,10 +2153,10 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 answerCallMethod.invoke(telephonyInterface)
             }
 
-            sendToast("Call answered via head gesture")
+            sendToast("השיחה נענתה באמצעות מחוות ראש")
         } catch (e: Exception) {
             e.printStackTrace()
-            sendToast("Failed to answer call: ${e.message}")
+            sendToast("מענה לשיחה נכשל: ${e.message}")
         } finally {
             islandWindow?.close()
         }
@@ -2179,10 +2179,10 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 endCallMethod.invoke(telephonyInterface)
             }
 
-            sendToast("Call rejected via head gesture")
+            sendToast("השיחה נדחתה באמצעות מחוות ראש")
         } catch (e: Exception) {
             e.printStackTrace()
-            sendToast("Failed to reject call: ${e.message}")
+            sendToast("דחיית השיחה נכשלה: ${e.message}")
         } finally {
             islandWindow?.close()
         }
@@ -2717,7 +2717,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                         )
                         if (manual) {
                             sendToast(
-                                "Couldn't connect to socket: ${e.localizedMessage}"
+                                "לא ניתן להתחבר ל-socket: ${e.localizedMessage}"
                             )
                         } else {
                             showSocketConnectionFailureNotification("Couldn't connect to socket: ${e.localizedMessage}")
@@ -2731,7 +2731,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 Log.d(TAG, "<LogCollector:Complete:Failed> socket not connected")
                 if (manual) {
                     sendToast(
-                        "Couldn't connect to socket: timeout."
+                        "לא ניתן להתחבר ל-socket: פסק זמן."
                     )
                 } else {
                     showSocketConnectionFailureNotification("Couldn't connect to socket: Timeout")

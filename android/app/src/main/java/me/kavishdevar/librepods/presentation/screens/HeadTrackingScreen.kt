@@ -159,7 +159,7 @@ fun HeadTrackingScreen(viewModel: AirPodsViewModel, navigateToPurchase: () -> Un
             }
 
             StyledToggle(
-                label = "Head Gestures",
+                label = "מחוות ראש",
                 checked = state.headGesturesEnabled,
                 onCheckedChange = { viewModel.setHeadGesturesEnabled(it) },
                 enabled = state.isPremium || state.headGesturesEnabled,
@@ -171,7 +171,7 @@ fun HeadTrackingScreen(viewModel: AirPodsViewModel, navigateToPurchase: () -> Un
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                "Velocity",
+                "מהירות",
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -200,7 +200,7 @@ fun HeadTrackingScreen(viewModel: AirPodsViewModel, navigateToPurchase: () -> Un
                 gestureText = gestureTextValue
                 coroutineScope.launch {
                     val accepted = ServiceManager.getService()?.testHeadGestures() ?: false
-                    gestureText = if (accepted) "\"Yes\" gesture detected." else "\"No\" gesture detected."
+                    gestureText = if (accepted) "זוהתה מחוות \"כן\"." else "זוהתה מחוות \"לא\"."
                 }
             },
             backdrop = backdrop,
@@ -210,7 +210,7 @@ fun HeadTrackingScreen(viewModel: AirPodsViewModel, navigateToPurchase: () -> Un
             maxScale = 0.05f
         ) {
             Text(
-                "Test Head Gestures",
+                "בדיקת מחוות ראש",
                 style = TextStyle(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -387,7 +387,7 @@ private fun Plot() {
                         textSize = 12.sp.toPx()
                         textAlign = Paint.Align.LEFT
                     }
-                    drawText("Horizontal", width - 140.dp.toPx(), textOffsetY, paint)
+                    drawText("אופקי", width - 140.dp.toPx(), textOffsetY, paint)
                 }
 
                 drawCircle(verticalColor, 5.dp.toPx(), Offset(width - 70.dp.toPx(), legendY))
@@ -397,7 +397,7 @@ private fun Plot() {
                         textSize = 12.sp.toPx()
                         textAlign = Paint.Align.LEFT
                     }
-                    drawText("Vertical", width - 60.dp.toPx(), textOffsetY, paint)
+                    drawText("אנכי", width - 60.dp.toPx(), textOffsetY, paint)
                 }
             }
         }

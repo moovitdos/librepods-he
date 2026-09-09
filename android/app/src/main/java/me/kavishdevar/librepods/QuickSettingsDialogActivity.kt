@@ -428,7 +428,7 @@ fun NewControlCenterDialogContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.airpods),
-                    contentDescription = "Device Icon",
+                    contentDescription = "סמל מכשיר",
                     tint = textColor.copy(alpha = 0.8f),
                     modifier = Modifier.size(48.dp)
                 )
@@ -588,7 +588,7 @@ fun NewControlCenterDialogContent(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.airpods),
-                                        contentDescription = "Conversational Awareness",
+                                        contentDescription = "מודעות לשיחה",
                                         tint = Color.White,
                                         modifier = Modifier.size(32.dp)
                                     )
@@ -597,7 +597,7 @@ fun NewControlCenterDialogContent(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = "Conversational\nAwareness",
+                                    text = "מודעות\nלשיחה",
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
@@ -613,7 +613,7 @@ fun NewControlCenterDialogContent(
         } else {
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("Loading...", color = textColor)
+                Text("טוען...", color = textColor)
             }
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -631,9 +631,9 @@ private fun getModeIconRes(mode: NoiseControlMode): Int {
 
 private fun getModeLabel(mode: NoiseControlMode): String {
     return when (mode) {
-        NoiseControlMode.OFF -> "Off"
-        NoiseControlMode.TRANSPARENCY -> "Transparency"
-        NoiseControlMode.ADAPTIVE -> "Adaptive"
-        NoiseControlMode.NOISE_CANCELLATION -> "Noise Cancel"
+        NoiseControlMode.OFF -> "כבוי"
+        NoiseControlMode.TRANSPARENCY -> "שקיפות"
+        NoiseControlMode.ADAPTIVE -> "מותאם"
+        NoiseControlMode.NOISE_CANCELLATION -> "ביטול רעשים"
     }
 }

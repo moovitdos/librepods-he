@@ -541,7 +541,7 @@ fun EqualizerCard(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "Low".uppercase(),
+                                text = "נמוך".uppercase(),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontFamily = FontFamily(Font(R.font.sf_pro)),
@@ -558,7 +558,7 @@ fun EqualizerCard(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "Mid".uppercase(),
+                                text = "בינוני".uppercase(),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontFamily = FontFamily(Font(R.font.sf_pro)),
@@ -575,7 +575,7 @@ fun EqualizerCard(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(
-                                text = "High".uppercase(),
+                                text = "גבוה".uppercase(),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontFamily = FontFamily(Font(R.font.sf_pro)),

@@ -176,13 +176,13 @@ fun TroubleshootingScreen() {
                         outputStream.write(logContent.toByteArray())
                     }
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Log saved successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "היומן נשמר בהצלחה", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            "Failed to save log: ${e.localizedMessage}",
+                            "שמירת היומן נכשלה: ${e.localizedMessage}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -193,11 +193,11 @@ fun TroubleshootingScreen() {
 
     LaunchedEffect(currentStep) {
         instructionText = when (currentStep) {
-            0 -> "First, let's ensure Xposed module is properly configured. Tap the button below to check Xposed scope settings."
-            1 -> "Please put your AirPods in the case and close it, so they disconnect completely."
-            2 -> "Preparing to collect logs... Please wait."
-            3 -> "Now, open the AirPods case and connect your AirPods. Logs are being collected. Connection will be detected automatically, or you can manually stop logging when you're done."
-            4 -> "Log collection complete! You can now save or share the logs."
+            0 -> "תחילה, נוודא שמודול Xposed מוגדר כראוי. הקש על הכפתור למטה כדי לבדוק את הגדרות ההיקף של Xposed."
+            1 -> "הכנס את ה-AirPods לתוך הנרתיק וסגור אותו, כדי שהם יתנתקו לחלוטין."
+            2 -> "מתכונן לאיסוף יומנים... אנא המתן."
+            3 -> "כעת, פתח את נרתיק ה-AirPods וחבר את ה-AirPods. היומנים נאספים כעת. החיבור יזוהה אוטומטית, או שתוכל לעצור את התיעוד ידנית בסיום."
+            4 -> "איסוף היומנים הושלם! כעת תוכל לשמור או לשתף את היומנים."
             else -> ""
         }
     }
@@ -276,7 +276,7 @@ fun TroubleshootingScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Total Logs: ${savedLogs.size}",
+                            text = "סך כל היומנים: ${savedLogs.size}",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = textColor
@@ -289,7 +289,7 @@ fun TroubleshootingScreen() {
                                     contentColor = MaterialTheme.colorScheme.error
                                 )
                             ) {
-                                Text("Delete All")
+                                Text("מחק הכול")
                             }
                         }
                     }
@@ -329,7 +329,7 @@ fun TroubleshootingScreen() {
                             ) {
                                 Icon(
                                     Icons.Default.Delete,
-                                    contentDescription = "Delete",
+                                    contentDescription = "מחק",
                                     tint = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -423,7 +423,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("Open Xposed Settings")
+                                    Text("פתח הגדרות Xposed")
                                 }
                             }
 
@@ -480,7 +480,7 @@ fun TroubleshootingScreen() {
                                                         selectedLogFile = it
                                                         Toast.makeText(
                                                             context,
-                                                            "Log saved: ${it.name}",
+                                                            "היומן נשמר: ${it.name}",
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -489,7 +489,7 @@ fun TroubleshootingScreen() {
                                                 withContext(Dispatchers.Main) {
                                                     Toast.makeText(
                                                         context,
-                                                        "Error collecting logs: ${e.message}",
+                                                        "שגיאה באיסוף היומנים: ${e.message}",
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                     isCollectingLogs = false
@@ -505,7 +505,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("Continue")
+                                    Text("המשך")
                                 }
                             }
 
@@ -521,7 +521,7 @@ fun TroubleshootingScreen() {
                                     Spacer(modifier = Modifier.height(8.dp))
 
                                     Text(
-                                        text = if (currentStep == 2) "Preparing..." else "Collecting logs...",
+                                        text = if (currentStep == 2) "מתכונן..." else "אוסף יומנים...",
                                         fontSize = 14.sp,
                                         color = textColor
                                     )
@@ -545,7 +545,7 @@ fun TroubleshootingScreen() {
                                                         isCollectingLogs = false
                                                         Toast.makeText(
                                                             context,
-                                                            "Log collection stopped",
+                                                            "איסוף היומנים הופסק",
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -559,7 +559,7 @@ fun TroubleshootingScreen() {
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                         ) {
-                                            Text("Stop Collection")
+                                            Text("עצור איסוף")
                                         }
                                     }
                                 }
@@ -590,7 +590,7 @@ fun TroubleshootingScreen() {
                                                 context.startActivity(
                                                     Intent.createChooser(
                                                         shareIntent,
-                                                        "Share log file"
+                                                        "שתף קובץ יומן"
                                                     )
                                                 )
                                             }
@@ -604,10 +604,10 @@ fun TroubleshootingScreen() {
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Share,
-                                            contentDescription = "Share"
+                                            contentDescription = "שתף"
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Share")
+                                        Text("שתף")
                                     }
 
                                     Spacer(modifier = Modifier.width(16.dp))
@@ -629,10 +629,10 @@ fun TroubleshootingScreen() {
                                     ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_save),
-                                            contentDescription = "Save"
+                                            contentDescription = "שמור"
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("Save")
+                                        Text("שמור")
                                     }
                                 }
 
@@ -650,7 +650,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("Done")
+                                    Text("סיום")
                                 }
                             }
                         }
@@ -661,9 +661,9 @@ fun TroubleshootingScreen() {
             if (showDeleteDialog && selectedLogFile != null) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("Delete Log File") },
+                    title = { Text("מחיקת קובץ יומן") },
                     text = {
-                        Text("Are you sure you want to delete this log file? This action cannot be undone.")
+                        Text("האם אתה בטוח שברצונך למחוק את קובץ היומן הזה? לא ניתן לבטל פעולה זו.")
                     },
                     confirmButton = {
                         TextButton(
@@ -673,14 +673,14 @@ fun TroubleshootingScreen() {
                                         savedLogs.remove(file)
                                         Toast.makeText(
                                             context,
-                                            "Log file deleted",
+                                            "קובץ היומן נמחק",
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
                                     } else {
                                         Toast.makeText(
                                             context,
-                                            "Failed to delete log file",
+                                            "מחיקת קובץ היומן נכשלה",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -688,12 +688,12 @@ fun TroubleshootingScreen() {
                                 showDeleteDialog = false
                             }
                         ) {
-                            Text("Delete", color = MaterialTheme.colorScheme.error)
+                            Text("מחק", color = MaterialTheme.colorScheme.error)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteDialog = false }) {
-                            Text("Cancel")
+                            Text("ביטול")
                         }
                     }
                 )
@@ -702,9 +702,9 @@ fun TroubleshootingScreen() {
             if (showDeleteAllDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteAllDialog = false },
-                    title = { Text("Delete All Logs") },
+                    title = { Text("מחיקת כל היומנים") },
                     text = {
-                        Text("Are you sure you want to delete all log files? This action cannot be undone and will remove ${savedLogs.size} log files.")
+                        Text("האם אתה בטוח שברצונך למחוק את כל קובצי היומן? לא ניתן לבטל פעולה זו והיא תסיר ${savedLogs.size} קובצי יומן.")
                     },
                     confirmButton = {
                         TextButton(
@@ -721,13 +721,13 @@ fun TroubleshootingScreen() {
                                             savedLogs.clear()
                                             Toast.makeText(
                                                 context,
-                                                "Deleted $deletedCount log files",
+                                                "נמחקו $deletedCount קובצי יומן",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         } else {
                                             Toast.makeText(
                                                 context,
-                                                "Failed to delete log files",
+                                                "מחיקת קובצי היומן נכשלה",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -736,12 +736,12 @@ fun TroubleshootingScreen() {
                                 showDeleteAllDialog = false
                             }
                         ) {
-                            Text("Delete All", color = MaterialTheme.colorScheme.error)
+                            Text("מחק הכול", color = MaterialTheme.colorScheme.error)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteAllDialog = false }) {
-                            Text("Cancel")
+                            Text("ביטול")
                         }
                     }
                 )
@@ -766,7 +766,7 @@ fun TroubleshootingScreen() {
                             logContent = try {
                                 selectedLogFile?.readText() ?: ""
                             } catch (e: Exception) {
-                                "Error loading log content: ${e.message}"
+                                "שגיאה בטעינת תוכן היומן: ${e.message}"
                             }
                             isLoadingLogContent = false
                             logContentLoaded = true
@@ -786,7 +786,7 @@ fun TroubleshootingScreen() {
                             .padding(bottom = 12.dp),
                     ) {
                         Text(
-                            text = selectedLogFile?.name ?: "Log Content",
+                            text = selectedLogFile?.name ?: "תוכן היומן",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp,
@@ -866,7 +866,7 @@ fun TroubleshootingScreen() {
                                     context.startActivity(
                                         Intent.createChooser(
                                             shareIntent,
-                                            "Share log file"
+                                            "שתף קובץ יומן"
                                         )
                                     )
                                 }
@@ -880,10 +880,10 @@ fun TroubleshootingScreen() {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = "Share"
+                                contentDescription = "שתף"
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Share")
+                            Text("שתף")
                         }
 
                         Button(
@@ -901,10 +901,10 @@ fun TroubleshootingScreen() {
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_save),
-                                contentDescription = "Save"
+                                contentDescription = "שמור"
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Save")
+                            Text("שמור")
                         }
                     }
                 }

@@ -136,7 +136,7 @@ fun PermissionsPage(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            StyledList(title = "Required Permissions") {
+            StyledList(title = "הרשאות נדרשות") {
                 val animatedBluetoothIconColor by animateColorAsState(if (bluetoothPermissionsState.allPermissionsGranted) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface)
                 val animatedBluetoothContainerColor by animateColorAsState(
                     if (bluetoothPermissionsState.allPermissionsGranted) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest
@@ -150,7 +150,7 @@ fun PermissionsPage(
                             bluetoothPermissionsState.launchMultiplePermissionRequest()
                         }
                     } else null,
-                    description = "Required to communicate with AirPods",
+                    description = "נדרש לתקשורת עם ה-AirPods",
                     orientation = ListItemOrientation.Vertical,
                     leadingContent = {
                         Box(
@@ -173,7 +173,7 @@ fun PermissionsPage(
                     },
                 )
             }
-            StyledList(title = "Optional Permissions") {
+            StyledList(title = "הרשאות אופציונליות") {
                 val animatedNotificationsIconColor by animateColorAsState(
                     if (notificationPermissionState.status.isGranted) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                 )
@@ -186,14 +186,14 @@ fun PermissionsPage(
                 )
 
                 StyledListItem(
-                    name = "Notifications",
+                    name = "התראות",
                     onClick = if (!notificationPermissionState.status.isGranted) {
                         {
                             grantingAll = false
                             notificationPermissionState.launchPermissionRequest()
                         }
                     } else null,
-                    description = "Show battery status",
+                    description = "הצגת מצב הסוללה",
                     orientation = ListItemOrientation.Vertical,
                     leadingContent = {
                         Box(
@@ -216,14 +216,14 @@ fun PermissionsPage(
                     },
                 )
                 StyledListItem(
-                    name = "Phone",
+                    name = "טלפון",
                     onClick = if (!phonePermissionState.allPermissionsGranted) {
                         {
                             grantingAll = false
                             phonePermissionState.launchMultiplePermissionRequest()
                         }
                     } else null,
-                    description = "Respond to phone calls with head gestures",
+                    description = "מענה לשיחות טלפון באמצעות תנועות ראש",
                     orientation = ListItemOrientation.Vertical,
                     leadingContent = {
                         Box(
@@ -251,7 +251,7 @@ fun PermissionsPage(
             val animatedOverlayContainerColor by animateColorAsState(if (canDrawOverlays.value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest)
 
             StyledListItem(
-                name = "Display over other apps",
+                name = "הצגה מעל אפליקציות אחרות",
                 onClick = if (!canDrawOverlays.value) {
                     {
                         grantingAll = false
@@ -262,7 +262,7 @@ fun PermissionsPage(
                         context.startActivity(intent)
                     }
                 } else null,
-                description = "Show popups when AirPods are nearby or audio switches to them.",
+                description = "הצגת חלוניות כאשר ה-AirPods בקרבת מקום או כשהשמע עובר אליהם.",
                 orientation = ListItemOrientation.Vertical,
                 leadingContent = {
                     Box(
@@ -319,7 +319,7 @@ fun PermissionsPage(
                     enabled = !bluetoothPermissionsState.allPermissionsGranted || !notificationPermissionState.status.isGranted || !phonePermissionState.allPermissionsGranted || !canDrawOverlays.value
                 ) {
                     Text(
-                        text = "Grant all",
+                        text = "הענק הכול",
                         style = MaterialTheme.typography.labelMedium
                     )
                 }
