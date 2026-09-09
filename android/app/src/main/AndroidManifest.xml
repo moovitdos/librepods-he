@@ -132,6 +132,22 @@
             </intent-filter>
         </activity>
 
+        <!--
+            Legacy shortcut picker: lets MacroDroid ("Launch Shortcut"), Tasker
+            ("Shortcut"), Nova, Button Mapper etc. list LibrePods and build a
+            listening-mode shortcut. Inherits the app label/icon on purpose.
+        -->
+        <activity
+            android:name=".NoiseControlShortcutPickerActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NoiseControlShortcut"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".QuickSettingsDialogActivity"
             android:exported="false"

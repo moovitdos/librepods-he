@@ -65,7 +65,8 @@ https://github.com/user-attachments/assets/43911243-0576-4093-8c55-89c1db5ea533
 Besides the in-app buttons, the Quick Settings tile and the home-screen widget, the listening (noise control) mode can be changed from outside LibrePods:
 
 - **Launcher shortcuts** – long-press the LibrePods icon: *Switch mode*, *Noise Cancellation*, *Transparency*, *Adaptive*, *Off*. Drag one onto the home screen to get a one-tap icon (some launchers only list the first four).
-- **Any app that can launch an activity** (Tasker, MacroDroid, Automate, Key Mapper, Button Mapper, Shortcut Maker, ...): start `me.kavishdevar.librepods/.NoiseControlShortcutActivity` with action `me.kavishdevar.librepods.SET_ANC_MODE`. Optional extra `mode` = `off`, `anc`, `transparency`, `adaptive` (or the raw value `1`–`4`). Without the extra the mode cycles exactly like a tap on the Quick Settings tile.
+- **Apps with a shortcut picker** (MacroDroid *Launch Shortcut*, Tasker *Shortcut*, Nova, Button Mapper, ...): pick **LibrePods** in the list of shortcuts and choose the mode.
+- **Any app that can launch an activity** (Tasker, MacroDroid *Send Intent*, Automate, Key Mapper, Shortcut Maker, ...): start `me.kavishdevar.librepods/.NoiseControlShortcutActivity` with action `me.kavishdevar.librepods.SET_ANC_MODE`. Optional extra `mode` = `off`, `anc`, `transparency`, `adaptive` (or the raw value `1`–`4`). Without the extra the mode cycles exactly like a tap on the Quick Settings tile.
 - **Links / NFC tags**: open `librepods://noise-control/anc` (or `/transparency`, `/adaptive`, `/off`; `librepods://noise-control` alone cycles).
 - **Broadcast** (only while the LibrePods service is running): send `me.kavishdevar.librepods.SET_ANC_MODE` with the integer extra `mode` (1 = Off, 2 = ANC, 3 = Transparency, 4 = Adaptive); without the extra it cycles through the modes enabled for press-and-hold.
 
