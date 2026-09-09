@@ -176,13 +176,13 @@ fun TroubleshootingScreen() {
                         outputStream.write(logContent.toByteArray())
                     }
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "היומן נשמר בהצלחה", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.troubleshooting_log_saved), Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            "שמירת היומן נכשלה: ${e.localizedMessage}",
+                            context.getString(R.string.troubleshooting_failed_to_save_log, e.localizedMessage),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -193,11 +193,11 @@ fun TroubleshootingScreen() {
 
     LaunchedEffect(currentStep) {
         instructionText = when (currentStep) {
-            0 -> "תחילה, נוודא שמודול Xposed מוגדר כראוי. הקש על הכפתור למטה כדי לבדוק את הגדרות ההיקף של Xposed."
-            1 -> "הכנס את ה-AirPods לתוך הנרתיק וסגור אותו, כדי שהם יתנתקו לחלוטין."
-            2 -> "מתכונן לאיסוף יומנים... אנא המתן."
-            3 -> "כעת, פתח את נרתיק ה-AirPods וחבר את ה-AirPods. היומנים נאספים כעת. החיבור יזוהה אוטומטית, או שתוכל לעצור את התיעוד ידנית בסיום."
-            4 -> "איסוף היומנים הושלם! כעת תוכל לשמור או לשתף את היומנים."
+            0 -> context.getString(R.string.troubleshooting_step_check_xposed)
+            1 -> context.getString(R.string.troubleshooting_step_close_case)
+            2 -> context.getString(R.string.troubleshooting_step_preparing_wait)
+            3 -> context.getString(R.string.troubleshooting_step_open_case_collecting)
+            4 -> context.getString(R.string.troubleshooting_step_collection_complete)
             else -> ""
         }
     }
@@ -276,7 +276,7 @@ fun TroubleshootingScreen() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "סך כל היומנים: ${savedLogs.size}",
+                            text = stringResource(R.string.troubleshooting_total_logs, savedLogs.size),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = textColor
@@ -289,7 +289,7 @@ fun TroubleshootingScreen() {
                                     contentColor = MaterialTheme.colorScheme.error
                                 )
                             ) {
-                                Text("מחק הכול")
+                                Text(stringResource(R.string.troubleshooting_delete_all))
                             }
                         }
                     }
@@ -329,7 +329,7 @@ fun TroubleshootingScreen() {
                             ) {
                                 Icon(
                                     Icons.Default.Delete,
-                                    contentDescription = "מחק",
+                                    contentDescription = stringResource(R.string.troubleshooting_delete),
                                     tint = MaterialTheme.colorScheme.error
                                 )
                             }
@@ -423,7 +423,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("פתח הגדרות Xposed")
+                                    Text(stringResource(R.string.troubleshooting_open_xposed_settings))
                                 }
                             }
 
@@ -480,7 +480,7 @@ fun TroubleshootingScreen() {
                                                         selectedLogFile = it
                                                         Toast.makeText(
                                                             context,
-                                                            "היומן נשמר: ${it.name}",
+                                                            context.getString(R.string.troubleshooting_log_saved_as, it.name),
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -489,7 +489,7 @@ fun TroubleshootingScreen() {
                                                 withContext(Dispatchers.Main) {
                                                     Toast.makeText(
                                                         context,
-                                                        "שגיאה באיסוף היומנים: ${e.message}",
+                                                        context.getString(R.string.troubleshooting_error_collecting_logs, e.message),
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                     isCollectingLogs = false
@@ -505,7 +505,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("המשך")
+                                    Text(stringResource(R.string.troubleshooting_continue))
                                 }
                             }
 
@@ -521,7 +521,7 @@ fun TroubleshootingScreen() {
                                     Spacer(modifier = Modifier.height(8.dp))
 
                                     Text(
-                                        text = if (currentStep == 2) "מתכונן..." else "אוסף יומנים...",
+                                        text = if (currentStep == 2) stringResource(R.string.troubleshooting_preparing) else stringResource(R.string.troubleshooting_collecting_logs),
                                         fontSize = 14.sp,
                                         color = textColor
                                     )
@@ -545,7 +545,7 @@ fun TroubleshootingScreen() {
                                                         isCollectingLogs = false
                                                         Toast.makeText(
                                                             context,
-                                                            "איסוף היומנים הופסק",
+                                                            context.getString(R.string.troubleshooting_log_collection_stopped),
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -559,7 +559,7 @@ fun TroubleshootingScreen() {
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                         ) {
-                                            Text("עצור איסוף")
+                                            Text(stringResource(R.string.troubleshooting_stop_collection))
                                         }
                                     }
                                 }
@@ -590,7 +590,7 @@ fun TroubleshootingScreen() {
                                                 context.startActivity(
                                                     Intent.createChooser(
                                                         shareIntent,
-                                                        "שתף קובץ יומן"
+                                                        context.getString(R.string.troubleshooting_share_log_file)
                                                     )
                                                 )
                                             }
@@ -604,10 +604,10 @@ fun TroubleshootingScreen() {
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.Share,
-                                            contentDescription = "שתף"
+                                            contentDescription = stringResource(R.string.troubleshooting_share)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("שתף")
+                                        Text(stringResource(R.string.troubleshooting_share))
                                     }
 
                                     Spacer(modifier = Modifier.width(16.dp))
@@ -629,10 +629,10 @@ fun TroubleshootingScreen() {
                                     ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_save),
-                                            contentDescription = "שמור"
+                                            contentDescription = stringResource(R.string.save)
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
-                                        Text("שמור")
+                                        Text(stringResource(R.string.save))
                                     }
                                 }
 
@@ -650,7 +650,7 @@ fun TroubleshootingScreen() {
                                         contentColor = textColor
                                     )
                                 ) {
-                                    Text("סיום")
+                                    Text(stringResource(R.string.troubleshooting_done))
                                 }
                             }
                         }
@@ -661,9 +661,9 @@ fun TroubleshootingScreen() {
             if (showDeleteDialog && selectedLogFile != null) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("מחיקת קובץ יומן") },
+                    title = { Text(stringResource(R.string.troubleshooting_delete_log_file)) },
                     text = {
-                        Text("האם אתה בטוח שברצונך למחוק את קובץ היומן הזה? לא ניתן לבטל פעולה זו.")
+                        Text(stringResource(R.string.troubleshooting_delete_log_file_confirmation))
                     },
                     confirmButton = {
                         TextButton(
@@ -673,14 +673,14 @@ fun TroubleshootingScreen() {
                                         savedLogs.remove(file)
                                         Toast.makeText(
                                             context,
-                                            "קובץ היומן נמחק",
+                                            context.getString(R.string.troubleshooting_log_file_deleted),
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
                                     } else {
                                         Toast.makeText(
                                             context,
-                                            "מחיקת קובץ היומן נכשלה",
+                                            context.getString(R.string.troubleshooting_failed_to_delete_log_file),
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -688,12 +688,12 @@ fun TroubleshootingScreen() {
                                 showDeleteDialog = false
                             }
                         ) {
-                            Text("מחק", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.troubleshooting_delete), color = MaterialTheme.colorScheme.error)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteDialog = false }) {
-                            Text("ביטול")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
@@ -702,9 +702,9 @@ fun TroubleshootingScreen() {
             if (showDeleteAllDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteAllDialog = false },
-                    title = { Text("מחיקת כל היומנים") },
+                    title = { Text(stringResource(R.string.troubleshooting_delete_all_logs)) },
                     text = {
-                        Text("האם אתה בטוח שברצונך למחוק את כל קובצי היומן? לא ניתן לבטל פעולה זו והיא תסיר ${savedLogs.size} קובצי יומן.")
+                        Text(stringResource(R.string.troubleshooting_delete_all_logs_confirmation, savedLogs.size))
                     },
                     confirmButton = {
                         TextButton(
@@ -721,13 +721,13 @@ fun TroubleshootingScreen() {
                                             savedLogs.clear()
                                             Toast.makeText(
                                                 context,
-                                                "נמחקו $deletedCount קובצי יומן",
+                                                context.getString(R.string.troubleshooting_deleted_log_files, deletedCount),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         } else {
                                             Toast.makeText(
                                                 context,
-                                                "מחיקת קובצי היומן נכשלה",
+                                                context.getString(R.string.troubleshooting_failed_to_delete_log_files),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -736,12 +736,12 @@ fun TroubleshootingScreen() {
                                 showDeleteAllDialog = false
                             }
                         ) {
-                            Text("מחק הכול", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.troubleshooting_delete_all), color = MaterialTheme.colorScheme.error)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteAllDialog = false }) {
-                            Text("ביטול")
+                            Text(stringResource(R.string.cancel))
                         }
                     }
                 )
@@ -766,7 +766,7 @@ fun TroubleshootingScreen() {
                             logContent = try {
                                 selectedLogFile?.readText() ?: ""
                             } catch (e: Exception) {
-                                "שגיאה בטעינת תוכן היומן: ${e.message}"
+                                context.getString(R.string.troubleshooting_error_loading_log_content, e.message)
                             }
                             isLoadingLogContent = false
                             logContentLoaded = true
@@ -786,7 +786,7 @@ fun TroubleshootingScreen() {
                             .padding(bottom = 12.dp),
                     ) {
                         Text(
-                            text = selectedLogFile?.name ?: "תוכן היומן",
+                            text = selectedLogFile?.name ?: stringResource(R.string.troubleshooting_log_content),
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp,
@@ -866,7 +866,7 @@ fun TroubleshootingScreen() {
                                     context.startActivity(
                                         Intent.createChooser(
                                             shareIntent,
-                                            "שתף קובץ יומן"
+                                            context.getString(R.string.troubleshooting_share_log_file)
                                         )
                                     )
                                 }
@@ -880,10 +880,10 @@ fun TroubleshootingScreen() {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Share,
-                                contentDescription = "שתף"
+                                contentDescription = stringResource(R.string.troubleshooting_share)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("שתף")
+                            Text(stringResource(R.string.troubleshooting_share))
                         }
 
                         Button(
@@ -901,10 +901,10 @@ fun TroubleshootingScreen() {
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_save),
-                                contentDescription = "שמור"
+                                contentDescription = stringResource(R.string.save)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("שמור")
+                            Text(stringResource(R.string.save))
                         }
                     }
                 }

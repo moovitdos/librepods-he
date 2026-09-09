@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.kavishdevar.librepods.BuildConfig
+import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.billing.BillingManager
 import me.kavishdevar.librepods.bluetooth.AACPManager
 import me.kavishdevar.librepods.bluetooth.AACPManager.Companion.ControlCommandIdentifiers
@@ -775,7 +776,7 @@ class AirPodsViewModel(
             service.disconnectAirPods()
             if (appContext.checkSelfPermission("android.permission.BLUETOOTH_PRIVILEGED") != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(
-                    appContext, "האפליקציה ניתקה את החיבור. יש לנתק דרך הגדרות Android.",
+                    appContext, appContext.getString(R.string.app_disconnected_disconnect_from_settings),
                     Toast.LENGTH_LONG
                 ).show()
             }

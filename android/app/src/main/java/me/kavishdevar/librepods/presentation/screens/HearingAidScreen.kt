@@ -202,10 +202,10 @@ fun HearingAidScreen(viewModel: AirPodsViewModel, onNavigateHearingAidAdjustment
 
     ConfirmationDialog(
         showDialog = showDialog,
-        title = "הפעלת מכשיר שמיעה",
-        message = "הפעלת מכשיר השמיעה תשבית את התאמת האוזניות ואת מצב השקיפות המותאם אישית.",
-        confirmText = "הפעל",
-        dismissText = "ביטול",
+        title = stringResource(R.string.enable_hearing_aid),
+        message = stringResource(R.string.enable_hearing_aid_message),
+        confirmText = stringResource(R.string.enable),
+        dismissText = stringResource(R.string.cancel),
         onConfirm = {
             showDialog.value = false
             val enrolled = state.controlStates[AACPManager.Companion.ControlCommandIdentifiers.HEARING_AID]?.getOrNull(0) == 0x01.toByte()

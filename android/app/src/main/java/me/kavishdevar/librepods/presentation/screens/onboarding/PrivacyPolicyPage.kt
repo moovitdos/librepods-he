@@ -41,48 +41,48 @@ fun PrivacyPolicyPage(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "עודכן לאחרונה: 20 ביוני 2026",
+                text = stringResource(R.string.privacy_policy_last_updated),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Text(
-                text = "סקירה כללית",
+                text = stringResource(R.string.privacy_policy_overview),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "LibrePods אינה אוספת, שומרת, מוכרת או משתפת מידע אישי למטרות פרסום, ניתוח נתונים, מעקב או יצירת פרופילים. האפליקציה אינה כוללת כלי ניתוח נתונים, דיווח קריסות, טלמטריה, ערכות פרסום (SDK) או שירותי מעקב.",
+                text = stringResource(R.string.privacy_policy_overview_no_collection),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "כל המידע נשאר במכשיר שלך, אלא אם תבחר במפורש ליצור איתי קשר, לפתוח דיווח (issue) ב-GitHub מתוך האפליקציה, או לבצע רכישה או חסות דרך פלטפורמה של צד שלישי.",
+                text = stringResource(R.string.privacy_policy_overview_on_device),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "שירותי צד שלישי",
+                text = stringResource(R.string.privacy_policy_third_party_services),
                 style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "LibrePods מציעה כמה דרכים ליצור איתי קשר, כולל אימייל, Discord ו-GitHub Issues.",
+                text = stringResource(R.string.privacy_policy_contact_methods),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "אימייל",
+                text = stringResource(R.string.privacy_policy_email),
                 style = MaterialTheme.typography.titleMedium
             )
 
             Text(
-                text = "אם תיצור איתי קשר באמצעות אימייל, אקבל את כתובת האימייל שלך וכל מידע שתבחר לכלול בהודעתך. בעת שימוש בטופס יצירת הקשר בתוך LibrePods, תוכנת האימייל שלך תיפתח עם כתובת אימייל, שורת נושא וגוף הודעה ממולאים מראש שתמלא. גוף ההודעה יכלול גם מידע על גרסת LibrePods ומידע על המכשיר כדי לסייע באיתור תקלות.",
+                text = stringResource(R.string.privacy_policy_email_details),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "תוכל לערוך או להסיר כל אחד מפרטי המידע האלה לפני שליחת האימייל.",
+                text = stringResource(R.string.privacy_policy_email_edit_before_sending),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -92,12 +92,12 @@ fun PrivacyPolicyPage(
             )
 
             Text(
-                text = "האפליקציה מספקת קישור לשרת ה-Discord של LibrePods. אם תבחר להצטרף לשרת ה-Discord, תהיה כפוף למדיניות הפרטיות של Discord.",
+                text = stringResource(R.string.privacy_policy_discord_link),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "אינני מקבל ממך שום מידע מ-Discord מלבד מה שגלוי לציבור בשרת ה-Discord, כגון שם המשתמש שלך, תאריך ההצטרפות, שרתים משותפים וכל הודעה או תוכן שתפרסם בשרת, אלא אם תבחר לשתף אותם איתי בשרת ה-Discord.",
+                text = stringResource(R.string.privacy_policy_discord_no_info),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -107,7 +107,7 @@ fun PrivacyPolicyPage(
             )
 
             Text(
-                text = "בעת פתיחת דיווח (issue) ב-GitHub דרך LibrePods, האפליקציה תמלא מראש את טופס הדיווח עם:",
+                text = stringResource(R.string.privacy_policy_github_issue_prefill),
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -116,30 +116,30 @@ fun PrivacyPolicyPage(
                 modifier = Modifier.padding(start = 8.dp)
             ) {
                 Text(
-                    "• שם גרסת LibrePods וקוד הגרסה",
+                    stringResource(R.string.privacy_policy_issue_version_info),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "• יצרן ודגם המכשיר",
+                    text = stringResource(R.string.privacy_policy_issue_device_info),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "• פרטי ה-build של Android",
+                    text = stringResource(R.string.privacy_policy_issue_android_build),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(
-                    text = "• מקור ההתקנה (Google Play או GitHub)",
+                    text = stringResource(R.string.privacy_policy_issue_install_source),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Text(
-                text = "מידע זה מסייע באבחון תקלות ובמתן תמיכה. שום מידע אינו נשלח באופן אוטומטי. המידע נשלח רק אם תבחר לפתוח את הדיווח ב-GitHub.",
+                text = stringResource(R.string.privacy_policy_issue_not_automatic),
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Text(
-                text = "תשלומים", style = MaterialTheme.typography.titleLarge
+                text = stringResource(R.string.privacy_policy_payments), style = MaterialTheme.typography.titleLarge
             )
 
             if (BuildConfig.PLAY_BUILD) {
@@ -148,12 +148,12 @@ fun PrivacyPolicyPage(
                 )
 
                 Text(
-                    text = "בעת שימוש בגרסה הזמינה ב-Google Play, הרכישות מעובדות על ידי Google Play.",
+                    text = stringResource(R.string.privacy_policy_google_play_purchases),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Text(
-                    text = "LibrePods מאמתת את הרכישה מול Google Play במכשיר עצמו, ולא מול שרת מרוחק שבשליטתי. אינני מקבל ממך שום מידע עליך או על הרכישה שלך מ-Google Play. עיבוד התשלום מתבצע כולו על ידי Google Play, ואין לי גישה לשום פרט מפרטי התשלום שלך.",
+                    text = stringResource(R.string.privacy_policy_google_play_verification),
                     style = MaterialTheme.typography.bodyMedium
                 )
             } else {
@@ -162,22 +162,22 @@ fun PrivacyPolicyPage(
                 )
 
                 Text(
-                    text = "בעת שימוש בגרסת ה-FOSS הזמינה ב-GitHub, כפתור השדרוג מקשר ל-GitHub Sponsors. אם תבחר להעניק חסות ל-LibrePods, החסות שלך מעובדת על ידי GitHub.",
+                    text = stringResource(R.string.privacy_policy_github_sponsors_link),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Text(
-                    text = "שם המשתמש שלך והמדינה/אזור שלך משותפים איתי כאשר אתה מעניק חסות ל-LibrePods. בהתאם להגדרות הפרטיות שלך ב-GitHub Sponsors, ייתכן שאקבל גם את כתובת האימייל שלך.",
+                    text = stringResource(R.string.privacy_policy_github_sponsors_shared_info),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Text(
-                text = "יצירת קשר", style = MaterialTheme.typography.titleLarge
+                text = stringResource(R.string.contact), style = MaterialTheme.typography.titleLarge
             )
 
             Text(
-                text = "אם יש לך שאלות בנוגע למדיניות פרטיות זו, אנא צור איתי קשר באמצעות אימייל בכתובת privacy@kavish.xyz.",
+                text = stringResource(R.string.privacy_policy_contact_details),
                 style = MaterialTheme.typography.bodyMedium
             )
 

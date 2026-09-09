@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -231,12 +232,13 @@ private fun getModeIconRes(mode: NoiseControlMode): Int {
     }
 }
 
+@Composable
 private fun getModeLabel(mode: NoiseControlMode): String {
     return when (mode) {
-        NoiseControlMode.OFF -> "Off"
-        NoiseControlMode.TRANSPARENCY -> "Transparency"
-        NoiseControlMode.ADAPTIVE -> "Adaptive"
-        NoiseControlMode.NOISE_CANCELLATION -> "Noise Cancellation"
+        NoiseControlMode.OFF -> stringResource(R.string.off)
+        NoiseControlMode.TRANSPARENCY -> stringResource(R.string.transparency)
+        NoiseControlMode.ADAPTIVE -> stringResource(R.string.adaptive)
+        NoiseControlMode.NOISE_CANCELLATION -> stringResource(R.string.noise_cancellation)
     }
 }
 

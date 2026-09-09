@@ -501,7 +501,7 @@ fun AppSettingsScreen(
                         Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
                     }) {
                     Text(
-                        "שמור",
+                        stringResource(R.string.save),
                         fontFamily = FontFamily(Font(R.font.sf_pro)),
                         fontWeight = FontWeight.Medium
                     )
@@ -510,7 +510,7 @@ fun AppSettingsScreen(
                 TextButton(
                     onClick = { viewModel.setShowCameraDialog(false) }) {
                     Text(
-                        "ביטול",
+                        stringResource(R.string.cancel),
                         fontFamily = FontFamily(Font(R.font.sf_pro)),
                         fontWeight = FontWeight.Medium
                     )

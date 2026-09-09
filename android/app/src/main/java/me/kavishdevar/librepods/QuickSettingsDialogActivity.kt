@@ -81,6 +81,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -428,7 +429,7 @@ fun NewControlCenterDialogContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.airpods),
-                    contentDescription = "סמל מכשיר",
+                    contentDescription = stringResource(R.string.qs_device_icon),
                     tint = textColor.copy(alpha = 0.8f),
                     modifier = Modifier.size(48.dp)
                 )
@@ -536,7 +537,7 @@ fun NewControlCenterDialogContent(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = getModeIconRes(currentAncMode)),
-                                        contentDescription = getModeLabel(currentAncMode),
+                                        contentDescription = getModeLabel(context, currentAncMode),
                                         tint = Color.White,
                                         modifier = Modifier.size(32.dp)
                                     )
@@ -545,7 +546,7 @@ fun NewControlCenterDialogContent(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = getModeLabel(currentAncMode),
+                                    text = getModeLabel(context, currentAncMode),
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
@@ -588,7 +589,7 @@ fun NewControlCenterDialogContent(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.airpods),
-                                        contentDescription = "מודעות לשיחה",
+                                        contentDescription = stringResource(R.string.conversational_awareness),
                                         tint = Color.White,
                                         modifier = Modifier.size(32.dp)
                                     )
@@ -597,7 +598,7 @@ fun NewControlCenterDialogContent(
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text(
-                                    text = "מודעות\nלשיחה",
+                                    text = stringResource(R.string.qs_conversational_awareness_two_line),
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
@@ -613,7 +614,7 @@ fun NewControlCenterDialogContent(
         } else {
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text("טוען...", color = textColor)
+                Text(stringResource(R.string.qs_loading), color = textColor)
             }
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -629,11 +630,11 @@ private fun getModeIconRes(mode: NoiseControlMode): Int {
     }
 }
 
-private fun getModeLabel(mode: NoiseControlMode): String {
+private fun getModeLabel(context: Context, mode: NoiseControlMode): String {
     return when (mode) {
-        NoiseControlMode.OFF -> "כבוי"
-        NoiseControlMode.TRANSPARENCY -> "שקיפות"
-        NoiseControlMode.ADAPTIVE -> "מותאם"
-        NoiseControlMode.NOISE_CANCELLATION -> "ביטול רעשים"
+        NoiseControlMode.OFF -> context.getString(R.string.off)
+        NoiseControlMode.TRANSPARENCY -> context.getString(R.string.transparency)
+        NoiseControlMode.ADAPTIVE -> context.getString(R.string.adaptive)
+        NoiseControlMode.NOISE_CANCELLATION -> context.getString(R.string.qs_noise_cancel_short)
     }
 }
