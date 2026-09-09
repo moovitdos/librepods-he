@@ -1,0 +1,39 @@
+name: Hebrew Debug Build
+
+# Self-contained debug-only build for the Hebrew translation branch.
+# No secrets, no release, no Discord — just builds the FOSS debug APK and
+# uploads it as a workflow artifact. Mirrors the PR path of ci-android.yml,
+# which is known to build without any signing secrets.
+
+on:
+  push:
+    branches:
+      - hebrew-translation
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Accept Licenses
+        run: yes | sdkmanager --licenses
+      - name: Install NDK
+        run: sdkmanager "ndk;30.0.14904198"
+      - name: Build FOSS debug APK
+        run: ./gradlew assembleFossDebug --stacktrace
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk-foss-debug
+          path: android/app/build/outputs/apk/foss/debug/app-foss-debug.apk
+          if-no-files-found: error
