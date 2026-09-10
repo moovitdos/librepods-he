@@ -28,12 +28,13 @@ import me.kavishdevar.librepods.presentation.screens.HearingAidAdjustmentsScreen
 import me.kavishdevar.librepods.presentation.screens.HearingAidScreen
 import me.kavishdevar.librepods.presentation.screens.HearingProtectionScreen
 import me.kavishdevar.librepods.presentation.screens.LoadingScreen
-import me.kavishdevar.librepods.presentation.screens.LongPress
 import me.kavishdevar.librepods.presentation.screens.MicrophoneSettingsRoute
 import me.kavishdevar.librepods.presentation.screens.OpenSourceLicensesScreen
 import me.kavishdevar.librepods.presentation.screens.PurchaseScreen
 import me.kavishdevar.librepods.presentation.screens.ReleaseNotesScreen
 import me.kavishdevar.librepods.presentation.screens.RenameScreen
+import me.kavishdevar.librepods.presentation.screens.StemBudScreen
+import me.kavishdevar.librepods.presentation.screens.StemPressActionScreen
 import me.kavishdevar.librepods.presentation.screens.TransparencySettingsScreen
 import me.kavishdevar.librepods.presentation.screens.TroubleshootingScreen
 import me.kavishdevar.librepods.presentation.screens.UpdateHearingTestRoute
@@ -92,16 +93,7 @@ fun AppNavGraph(
                                 navigateToRename = { navigate(Screen.Rename) },
                                 navigateToHearingProtection = { navigate(Screen.HearingProtection) },
                                 navigateToHearingAid = { navigate(Screen.HearingAid) },
-                                navigateToLeftLongPress = {
-                                    navigate(
-                                        Screen.LongPress("Left")
-                                    )
-                                },
-                                navigateToRightLongPress = {
-                                    navigate(
-                                        Screen.LongPress("Right")
-                                    )
-                                },
+                                navigateToStemBud = { bud -> navigate(Screen.StemBud(bud)) },
                                 navigateToPurchase = { navigate(Screen.Purchase) },
                                 navigateToAdaptiveStrength = { navigate(Screen.AdaptiveStrength) },
                                 navigateToEqualizer = { navigate(Screen.Equalizer) },
@@ -223,12 +215,25 @@ fun AppNavGraph(
                             EqualizerRoute(airPodsViewModel)
                         }
 
-                    is Screen.LongPress ->
+                    is Screen.StemBud ->
                         NavEntry(screen) {
                             if (!airPodsViewModel.isReady) LoadingScreen()
-                            LongPress(
+                            StemBudScreen(
                                 viewModel = airPodsViewModel,
-                                name = screen.bud,
+                                bud = screen.bud,
+                                navigateToStemPress = { type ->
+                                    navigate(Screen.StemPress(screen.bud, type))
+                                }
+                            )
+                        }
+
+                    is Screen.StemPress ->
+                        NavEntry(screen) {
+                            if (!airPodsViewModel.isReady) LoadingScreen()
+                            StemPressActionScreen(
+                                viewModel = airPodsViewModel,
+                                bud = screen.bud,
+                                typeKey = screen.type,
                                 navigateToPurchase = ::navigateToPurchase
                             )
                         }

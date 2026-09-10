@@ -89,10 +89,22 @@ Every stem press that the AirPods forward to the phone is announced with the bro
 | `bud`    | `left`, `right`                                                                                          |
 | `action` | what LibrePods itself does for that press, e.g. `CYCLE_NOISE_CONTROL_MODES`, `DIGITAL_ASSISTANT`, `AUTOMATION_ONLY` |
 
-The AirPods only forward a press type when it is *customized*; a press left at its stock behaviour is handled inside the AirPods and the phone never sees it. In the app, *Press and Hold AirPods → Left / Right* offers **Automation (MacroDroid / Tasker)**: that press then does nothing on the phone except sending the broadcast. Press-and-hold set to *Listening Mode* or *Digital Assistant* sends the broadcast too, in addition to its normal job.
+The AirPods only forward a press type when it is *customized*; a press left at its built-in behaviour is handled inside the AirPods and the phone never sees it. In the app, *Stem Presses → Left / Right* lists press once, press twice, press three times and press and hold for that stem, each with these actions:
 
-- **MacroDroid**: trigger *Intent Received* with action `me.kavishdevar.librepods.STEM_PRESS`; add the extras `bud` and `type` as parameters to react to one stem only, or read them into variables.
-- **Tasker**: profile with the event *System → Intent Received*, action `me.kavishdevar.librepods.STEM_PRESS`; the extras become the variables `%type`, `%bud` and `%action`.
+| Action | What happens |
+|---|---|
+| Play/Pause, Next track, Previous track, Listening Mode, Digital Assistant | The phone performs it (the AirPods no longer handle the press themselves). |
+| **Launch shortcut** | Opens the system shortcut chooser; pick a MacroDroid macro, a Tasker task, an app, a contact… That shortcut is started on every press. |
+| **Automation (MacroDroid / Tasker)** | Nothing happens on the phone; only the broadcast is sent. |
+
+Every customized press sends the broadcast, whatever its action. Notes:
+
+- While a call is ringing or active, press once and press twice are handed back to the AirPods so answer/end and mute keep working (see *Call Controls*); they come back to your settings when the call ends. Press three times and press and hold stay customized during calls.
+- Customizing a press type applies to both stems at once at the AirPods level, so e.g. left press once = shortcut also makes the phone perform the right stem's press once (Play/Pause by default).
+- Starting a shortcut from the background needs the *Display over other apps* permission LibrePods already asks for.
+
+- **MacroDroid**: either give the macro a shortcut (*Launch shortcut* → *MacroDroid*), or use the trigger *Intent Received* with action `me.kavishdevar.librepods.STEM_PRESS`; add the extras `bud` and `type` as parameters to react to one stem only, or read them into variables.
+- **Tasker**: *Launch shortcut* → *Task Shortcut*, or a profile with the event *System → Intent Received*, action `me.kavishdevar.librepods.STEM_PRESS`; the extras become the variables `%type`, `%bud` and `%action`.
 - **Automate**: *Broadcast receive* block with the same action.
 
 To check that presses arrive, watch the log while pressing:

@@ -16,11 +16,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-@file:OptIn(ExperimentalStdlibApi::class, ExperimentalEncodingApi::class)
+@file:OptIn(ExperimentalEncodingApi::class)
 
 package me.kavishdevar.librepods.presentation.screens
 
-import android.util.Log
+import android.app.Activity
+import android.content.Intent
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -43,40 +47,55 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.IntentCompat
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.bluetooth.AACPManager
+import me.kavishdevar.librepods.bluetooth.AACPManager.Companion.StemPressType
 import me.kavishdevar.librepods.data.AirPodsNotifications
 import me.kavishdevar.librepods.data.StemAction
+import me.kavishdevar.librepods.data.StemPressPrefs
 import me.kavishdevar.librepods.presentation.components.ListItemOrientation
 import me.kavishdevar.librepods.presentation.components.StyledButton
 import me.kavishdevar.librepods.presentation.components.StyledList
 import me.kavishdevar.librepods.presentation.components.StyledListItem
+import me.kavishdevar.librepods.presentation.components.stemActionLabel
+import me.kavishdevar.librepods.presentation.components.stemPressTypeTitle
 import me.kavishdevar.librepods.presentation.theme.DesignSystem
 import me.kavishdevar.librepods.presentation.theme.LocalDesignSystem
 import me.kavishdevar.librepods.presentation.viewmodel.AirPodsViewModel
-import kotlin.experimental.and
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+/** Order of the options in the action picker (the built-in default is moved to the top). */
+private val ACTION_ORDER = listOf(
+    StemAction.PLAY_PAUSE,
+    StemAction.NEXT_TRACK,
+    StemAction.PREVIOUS_TRACK,
+    StemAction.CYCLE_NOISE_CONTROL_MODES,
+    StemAction.DIGITAL_ASSISTANT,
+    StemAction.LAUNCH_SHORTCUT,
+    StemAction.AUTOMATION_ONLY,
+)
+
+/**
+ * The four press types of one stem (press once / twice / three times / hold),
+ * each showing its current action and leading to [StemPressActionScreen].
+ * bud = "left" | "right".
+ */
 @ExperimentalHazeMaterialsApi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () -> Unit) {
+fun StemBudScreen(
+    viewModel: AirPodsViewModel,
+    bud: String,
+    navigateToStemPress: (String) -> Unit
+) {
     val state by viewModel.uiState.collectAsState()
-
-    val modesByte = state.controlStates[AACPManager.Companion.ControlCommandIdentifiers.LISTENING_MODE_CONFIGS]?.get(0) ?: 0
-
-    Log.d("PressAndHoldSettingsScreen", "Current modes state: ${modesByte.toString(2)}")
-    Log.d("PressAndHoldSettingsScreen", "Off mode: ${(modesByte and 0x01) != 0.toByte()}")
-    Log.d("PressAndHoldSettingsScreen", "Transparency mode: ${(modesByte and 0x04) != 0.toByte()}")
-    Log.d("PressAndHoldSettingsScreen", "Noise Cancellation mode: ${(modesByte and 0x02) != 0.toByte()}")
-    Log.d("PressAndHoldSettingsScreen", "Adaptive mode: ${(modesByte and 0x08) != 0.toByte()}")
-
-    val longPressAction = if (name.lowercase() == "left") state.leftAction else state.rightAction
 
     val m3eEnabled = LocalDesignSystem.current == DesignSystem.Material
     val topPadding = if (m3eEnabled) 0.dp else WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 84.dp
@@ -84,7 +103,103 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
 
     val scrollState = rememberScrollState()
 
-    Column (
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .verticalScroll(scrollState)
+            .padding(top = 8.dp)
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(topPadding))
+
+        StyledList(
+            description = stringResource(R.string.stem_bud_description)
+        ) {
+            for (type in StemPressType.entries) {
+                val typeKey = StemPressPrefs.typeKey(type)
+                val stateKey = StemPressPrefs.stateKey(bud, typeKey)
+                val action = state.stemActions[stateKey] ?: StemAction.defaultActions[type]!!
+                StyledListItem(
+                    name = stringResource(stemPressTypeTitle(typeKey)),
+                    description = stemActionLabel(action, state.stemShortcutNames[stateKey]),
+                    onClick = { navigateToStemPress(typeKey) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(bottomPadding))
+    }
+}
+
+/**
+ * Picks the action of one bud + press. typeKey = "single" | "double" | "triple" | "long".
+ * For LAUNCH_SHORTCUT the system shortcut chooser (ACTION_CREATE_SHORTCUT) is opened and
+ * the returned shortcut intent is stored; press-and-hold + listening mode also shows the
+ * list of modes to cycle through, like the original press-and-hold screen.
+ */
+@ExperimentalHazeMaterialsApi
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StemPressActionScreen(
+    viewModel: AirPodsViewModel,
+    bud: String,
+    typeKey: String,
+    navigateToPurchase: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    val type = StemPressPrefs.typeFromKey(typeKey) ?: StemPressType.LONG_PRESS
+    val stateKey = StemPressPrefs.stateKey(bud, typeKey)
+    val defaultAction = StemAction.defaultActions[type]!!
+    val currentAction = state.stemActions[stateKey] ?: defaultAction
+    val shortcutName = state.stemShortcutNames[stateKey]
+
+    val unsupportedText = stringResource(R.string.stem_shortcut_unsupported)
+    val chooserTitle = stringResource(R.string.stem_shortcut_chooser_title)
+
+    @Suppress("DEPRECATION")
+    val shortcutPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        if (result.resultCode != Activity.RESULT_OK || data == null) return@rememberLauncherForActivityResult
+        // Legacy shortcut result: what MacroDroid, Tasker, Button Mapper etc. consume too.
+        val shortcutIntent = IntentCompat.getParcelableExtra(
+            data, Intent.EXTRA_SHORTCUT_INTENT, Intent::class.java
+        )
+        val name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
+        if (shortcutIntent == null) {
+            Toast.makeText(context, unsupportedText, Toast.LENGTH_LONG).show()
+            return@rememberLauncherForActivityResult
+        }
+        viewModel.setStemShortcut(
+            bud = bud,
+            type = type,
+            intentUri = shortcutIntent.toUri(Intent.URI_INTENT_SCHEME),
+            name = name?.takeIf { it.isNotBlank() }
+                ?: shortcutIntent.component?.packageName
+                ?: shortcutIntent.action
+                ?: ""
+        )
+        viewModel.setStemAction(bud, type, StemAction.LAUNCH_SHORTCUT)
+    }
+    val pickShortcut = {
+        shortcutPicker.launch(
+            Intent.createChooser(Intent(Intent.ACTION_CREATE_SHORTCUT), chooserTitle)
+        )
+    }
+
+    val m3eEnabled = LocalDesignSystem.current == DesignSystem.Material
+    val topPadding = if (m3eEnabled) 0.dp else WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 84.dp
+    val bottomPadding = if (m3eEnabled) 0.dp else WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 12.dp
+
+    val scrollState = rememberScrollState()
+
+    val actions = listOf(defaultAction) + ACTION_ORDER.filter { it != defaultAction }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surfaceContainer)
@@ -95,40 +210,29 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
         Spacer(modifier = Modifier.height(topPadding))
 
         StyledList {
-            StyledListItem(
-                name = stringResource(R.string.noise_control),
-                selected = longPressAction == StemAction.CYCLE_NOISE_CONTROL_MODES,
-                onClick = {
-                    viewModel.setLongPressAction(
-                        name,
-                        StemAction.CYCLE_NOISE_CONTROL_MODES
-                    )
+            for (action in actions) {
+                val description = when (action) {
+                    defaultAction -> stringResource(R.string.stem_action_built_in)
+                    StemAction.LAUNCH_SHORTCUT ->
+                        shortcutName ?: stringResource(R.string.stem_action_launch_shortcut_description)
+                    StemAction.AUTOMATION_ONLY -> stringResource(R.string.stem_action_automation_description)
+                    else -> null
                 }
-            )
-
-            StyledListItem(
-                name = stringResource(R.string.digital_assistant),
-                selected = longPressAction == StemAction.DIGITAL_ASSISTANT,
-                onClick = {
-                    viewModel.setLongPressAction(
-                        name,
-                        StemAction.DIGITAL_ASSISTANT
-                    )
-                },
-                enabled = state.isPremium
-            )
-
-            StyledListItem(
-                name = stringResource(R.string.stem_action_automation),
-                description = stringResource(R.string.stem_action_automation_description),
-                selected = longPressAction == StemAction.AUTOMATION_ONLY,
-                onClick = {
-                    viewModel.setLongPressAction(
-                        name,
-                        StemAction.AUTOMATION_ONLY
-                    )
-                }
-            )
+                StyledListItem(
+                    name = stemActionLabel(action, null),
+                    description = description,
+                    selected = currentAction == action,
+                    enabled = action != StemAction.DIGITAL_ASSISTANT || state.isPremium,
+                    onClick = {
+                        if (action == StemAction.LAUNCH_SHORTCUT && shortcutName.isNullOrEmpty()) {
+                            // Nothing picked yet: the picker stores the shortcut and selects the action.
+                            pickShortcut()
+                        } else {
+                            viewModel.setStemAction(bud, type, action)
+                        }
+                    }
+                )
+            }
         }
 
         if (!state.isPremium) {
@@ -149,7 +253,23 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        if (longPressAction == StemAction.AUTOMATION_ONLY) {
+        if (currentAction == StemAction.LAUNCH_SHORTCUT) {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            StyledList(
+                title = stringResource(R.string.stem_shortcut_title),
+                description = stringResource(R.string.stem_shortcut_description)
+            ) {
+                StyledListItem(
+                    name = shortcutName?.takeIf { it.isNotEmpty() }
+                        ?: stringResource(R.string.stem_shortcut_none),
+                    description = stringResource(R.string.stem_shortcut_change),
+                    onClick = pickShortcut
+                )
+            }
+        }
+
+        if (currentAction == StemAction.AUTOMATION_ONLY) {
             Spacer(modifier = Modifier.height(32.dp))
 
             StyledList(
@@ -165,7 +285,7 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
             }
         }
 
-        if (longPressAction == StemAction.CYCLE_NOISE_CONTROL_MODES) {
+        if (type == StemPressType.LONG_PRESS && currentAction == StemAction.CYCLE_NOISE_CONTROL_MODES) {
             Spacer(modifier = Modifier.height(32.dp))
 
             val currentByte = state.controlStates[AACPManager.Companion.ControlCommandIdentifiers.LISTENING_MODE_CONFIGS]?.get(0)?.toInt() ?: 0

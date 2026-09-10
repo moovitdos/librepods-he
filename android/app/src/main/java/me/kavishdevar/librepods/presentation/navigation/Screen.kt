@@ -64,9 +64,17 @@ sealed interface Screen: NavKey {
     @Serializable
     data object Equalizer: Screen
 
+    /** The four press types of one stem. bud = "left" | "right". */
     @Serializable
-    data class LongPress(
+    data class StemBud(
         val bud: String
+    ): Screen
+
+    /** Action picker for one bud + press. type = "single" | "double" | "triple" | "long". */
+    @Serializable
+    data class StemPress(
+        val bud: String,
+        val type: String
     ): Screen
 
     @Serializable

@@ -410,4 +410,27 @@
     <string name="stem_action_automation_description">לא מבצע כלום בטלפון, רק מודיע לאפליקציות אוטומציה</string>
     <string name="stem_press_broadcast_title">שידור לאפליקציות אוטומציה</string>
     <string name="stem_press_broadcast_description">כל לחיצה שמגיעה לטלפון שולחת broadcast עם ה-action שלמטה. ב-MacroDroid השתמשו בטריגר ״Intent Received״, וב-Tasker באירוע ״Intent Received״.</string>
+
+    <!-- לחיצות על הידית: לכל אוזניה ולכל סוג לחיצה -->
+    <string name="stem_presses">לחיצות על הידית</string>
+    <string name="stem_presses_description">בחרו מה תעשה כל לחיצה על הידית השמאלית והימנית.</string>
+    <string name="stem_presses_item_description">לחיצה אחת, כפולה, משולשת וארוכה</string>
+    <string name="stem_left">ידית שמאל</string>
+    <string name="stem_right">ידית ימין</string>
+    <string name="press_three_times">לחיצה משולשת</string>
+    <string name="press_and_hold">לחיצה ארוכה</string>
+    <string name="next_track">השיר הבא</string>
+    <string name="previous_track">השיר הקודם</string>
+    <string name="stem_bud_description">לחיצה ששיניתם כאן מטופלת בטלפון במקום באוזניות. בזמן שיחה נכנסת או פעילה, לחיצה אחת ולחיצה כפולה שומרות על תפקידי השיחה המובנים (מענה/ניתוק, השתקה).</string>
+    <string name="stem_action_built_in">התנהגות מובנית, מטופלת באוזניות עצמן</string>
+    <string name="stem_action_launch_shortcut">הפעלת קיצור דרך</string>
+    <string name="stem_action_launch_shortcut_named">קיצור דרך: %1$s</string>
+    <string name="stem_action_launch_shortcut_description">הפעלת קיצור דרך מכל אפליקציה: מאקרו של MacroDroid, משימה של Tasker, אפליקציה, איש קשר…</string>
+    <string name="stem_shortcut_title">קיצור דרך</string>
+    <string name="stem_shortcut_description">מופעל בטלפון בכל פעם שהלחיצה הזאת מגיעה אליו.</string>
+    <string name="stem_shortcut_none">עדיין לא נבחר קיצור דרך</string>
+    <string name="stem_shortcut_change">הקישו כדי לבחור קיצור דרך אחר</string>
+    <string name="stem_shortcut_chooser_title">בחירת קיצור דרך</string>
+    <string name="stem_shortcut_unsupported">אי אפשר להשתמש בקיצור הזה: האפליקציה לא החזירה intent שניתן להפעיל</string>
+    <string name="stem_shortcut_launch_failed">הפעלת קיצור הדרך נכשלה: %1$s</string>
 </resources>

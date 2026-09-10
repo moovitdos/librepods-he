@@ -33,7 +33,14 @@ enum class StemAction {
      * [me.kavishdevar.librepods.data.AirPodsNotifications.STEM_PRESS] broadcast,
      * which is sent for every press that reaches the phone regardless of the action.
      */
-    AUTOMATION_ONLY;
+    AUTOMATION_ONLY,
+
+    /**
+     * Start the shortcut the user picked with the system shortcut chooser
+     * (a MacroDroid macro, a Tasker task, an app, a contact, ...). The shortcut
+     * intent is stored under [StemPressPrefs.shortcutKey] for this bud + press.
+     */
+    LAUNCH_SHORTCUT;
     companion object {
         fun fromString(action: String): StemAction? {
             return entries.find { it.name == action }

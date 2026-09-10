@@ -113,7 +113,7 @@ import me.kavishdevar.librepods.presentation.components.ConnectionSettings
 import me.kavishdevar.librepods.presentation.components.HearingHealthSettings
 import me.kavishdevar.librepods.presentation.components.MaterialButtonStyle
 import me.kavishdevar.librepods.presentation.components.NoiseControlSettings
-import me.kavishdevar.librepods.presentation.components.PressAndHoldSettings
+import me.kavishdevar.librepods.presentation.components.StemPressSettings
 import me.kavishdevar.librepods.presentation.components.StyledButton
 import me.kavishdevar.librepods.presentation.components.StyledListItem
 import me.kavishdevar.librepods.presentation.components.StyledToggle
@@ -134,8 +134,7 @@ fun AirPodsSettingsRoute(
     navigateToRename: () -> Unit,
     navigateToHearingProtection: () -> Unit,
     navigateToHearingAid: () -> Unit,
-    navigateToLeftLongPress: () -> Unit,
-    navigateToRightLongPress: () -> Unit,
+    navigateToStemBud: (String) -> Unit,
     navigateToPurchase: () -> Unit,
     navigateToAdaptiveStrength: () -> Unit,
     navigateToEqualizer: () -> Unit,
@@ -179,8 +178,7 @@ fun AirPodsSettingsRoute(
             navigateToRename = navigateToRename,
             navigateToHearingProtection = navigateToHearingProtection,
             navigateToHearingAid = navigateToHearingAid,
-            navigateToLeftLongPress = navigateToLeftLongPress,
-            navigateToRightLongPress = navigateToRightLongPress,
+            navigateToStemBud = navigateToStemBud,
             navigateToPurchase = navigateToPurchase,
             navigateToAdaptiveStrength = navigateToAdaptiveStrength,
             navigateToEqualizer = navigateToEqualizer,
@@ -221,8 +219,7 @@ fun AirPodsSettingsScreen(
         navigateToRename: () -> Unit,
         navigateToHearingProtection: () -> Unit,
         navigateToHearingAid: () -> Unit,
-        navigateToLeftLongPress: () -> Unit,
-        navigateToRightLongPress: () -> Unit,
+        navigateToStemBud: (String) -> Unit,
         navigateToPurchase: () -> Unit,
         navigateToAdaptiveStrength: () -> Unit,
         navigateToEqualizer: () -> Unit,
@@ -373,12 +370,7 @@ fun AirPodsSettingsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
                 item(key = "press_hold") {
-                    PressAndHoldSettings(
-                        leftAction = state.leftAction,
-                        rightAction = state.rightAction,
-                        navigateToLeftLongPress = navigateToLeftLongPress,
-                        navigateToRightLongPress = navigateToRightLongPress
-                    )
+                    StemPressSettings(navigateToStemBud = navigateToStemBud)
                 }
             }
 
@@ -975,8 +967,7 @@ fun AirPodsSettingsScreenPreviewApple() {
                 navigateToRename = {},
                 navigateToHearingProtection = {},
                 navigateToHearingAid = {},
-                navigateToLeftLongPress = {},
-                navigateToRightLongPress = {},
+                navigateToStemBud = {},
                 navigateToPurchase = {},
                 navigateToAdaptiveStrength = {},
                 navigateToEqualizer = {},
@@ -1022,8 +1013,7 @@ fun AirPodsSettingsScreenPreviewMaterial() {
                 navigateToRename = {},
                 navigateToHearingProtection = {},
                 navigateToHearingAid = {},
-                navigateToLeftLongPress = {},
-                navigateToRightLongPress = {},
+                navigateToStemBud = {},
                 navigateToPurchase = {},
                 navigateToAdaptiveStrength = {},
                 navigateToEqualizer = {},

@@ -100,6 +100,7 @@ import me.kavishdevar.librepods.data.Capability
 import me.kavishdevar.librepods.data.CustomEq
 import me.kavishdevar.librepods.data.NoiseControlMode
 import me.kavishdevar.librepods.data.StemAction
+import me.kavishdevar.librepods.data.StemPressPrefs
 import me.kavishdevar.librepods.data.XposedRemotePrefProvider
 import me.kavishdevar.librepods.data.isHeadTrackingData
 import me.kavishdevar.librepods.presentation.overlays.IslandType
@@ -600,6 +601,9 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             override fun onCallStateChanged(state: Int) {
                 when (state) {
                     TelephonyManager.CALL_STATE_RINGING -> {
+                        // Hand press once / press twice back to the AirPods for the call.
+                        isCallRinging = true
+                        setupStemActions()
                         val leAvailableForAudio =
                             bleManager.getMostRecentStatus()?.isLeftInEar == true || bleManager.getMostRecentStatus()?.isRightInEar == true
 //                        if ((CrossDevice.isAvailable && !isConnectedLocally && earDetectionNotification.status.contains(0x00)) || leAvailableForAudio) CoroutineScope(Dispatchers.IO).launch {
@@ -621,11 +625,16 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                             takeOver("call")
                         }
                         isInCall = true
+                        isCallRinging = false
+                        setupStemActions()
                     }
 
                     TelephonyManager.CALL_STATE_IDLE -> {
                         isInCall = false
+                        isCallRinging = false
                         gestureDetector?.stopDetection()
+                        // Restore the user's custom stem actions now that the call is over.
+                        setupStemActions()
                     }
                 }
             }
@@ -846,9 +855,14 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             TAG,
             "Setting up stem actions: Single Press Customized: $singlePressCustomized, Double Press Customized: $doublePressCustomized, Triple Press Customized: $triplePressCustomized, Long Press Customized: $longPressCustomized"
         )
+        // While a call rings or is active the AirPods' built-in call controls must win
+        // (press once = answer/end, press twice = mute, see Call Controls), so press
+        // once and press twice are handed back to the AirPods for the duration.
+        val callActive = isInCall || isCallRinging
+        if (callActive) Log.d(TAG, "Call active: press once / press twice stay built-in")
         aacpManager.sendStemConfigPacket(
-            singlePressCustomized,
-            doublePressCustomized,
+            singlePressCustomized && !callActive,
+            doublePressCustomized && !callActive,
             triplePressCustomized,
             longPressCustomized,
         )
@@ -1106,7 +1120,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 if (cameraActive && config.cameraAction != null && stemPressType == config.cameraAction) {
                         Runtime.getRuntime().exec(arrayOf("su", "-c", "input keyevent 27"))
                 } else {
-                    action?.let { executeStemAction(it) }
+                    action?.let { executeStemAction(it, bud, stemPressType) }
                 }
             }
 
@@ -1209,16 +1223,8 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         bud: AACPManager.Companion.StemPressBudType,
         action: StemAction?
     ) {
-        val typeName = when (type) {
-            StemPressType.SINGLE_PRESS -> "single"
-            StemPressType.DOUBLE_PRESS -> "double"
-            StemPressType.TRIPLE_PRESS -> "triple"
-            StemPressType.LONG_PRESS -> "long"
-        }
-        val budName = when (bud) {
-            AACPManager.Companion.StemPressBudType.LEFT -> "left"
-            AACPManager.Companion.StemPressBudType.RIGHT -> "right"
-        }
+        val typeName = StemPressPrefs.typeKey(type)
+        val budName = StemPressPrefs.budKey(bud)
         sendBroadcast(Intent(AirPodsNotifications.STEM_PRESS).apply {
             addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
             putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_TYPE, typeName)
@@ -1228,14 +1234,18 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         Log.d(TAG, "Broadcast stem press: $typeName $budName (${action?.name})")
     }
 
-    private fun executeStemAction(action: StemAction) {
+    /**
+     * Runs the action configured for a press that the AirPods forwarded to the phone.
+     * Presses only reach the phone when their type is customized (see [setupStemActions]);
+     * the AirPods then do nothing themselves, so even PLAY_PAUSE must be sent from here
+     * (e.g. left press once = shortcut, right press once = play/pause).
+     */
+    private fun executeStemAction(
+        action: StemAction,
+        bud: AACPManager.Companion.StemPressBudType,
+        type: StemPressType
+    ) {
         when (action) {
-            StemAction.defaultActions[StemPressType.SINGLE_PRESS] -> {
-                Log.d(
-                    "AirPodsParser", "Default single press action: Play/Pause, not taking action."
-                )
-            }
-
             StemAction.PLAY_PAUSE -> MediaController.sendPlayPause()
             StemAction.PREVIOUS_TRACK -> MediaController.sendPreviousTrack()
             StemAction.NEXT_TRACK -> MediaController.sendNextTrack()
@@ -1264,6 +1274,38 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 // The STEM_PRESS broadcast already went out in onStemPressReceived.
                 Log.d("AirPodsParser", "Automation-only action, nothing to do on the phone")
             }
+
+            StemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type)
+        }
+    }
+
+    /** Starts the shortcut picked in the settings for this bud + press ([StemAction.LAUNCH_SHORTCUT]). */
+    private fun launchStemShortcut(
+        bud: AACPManager.Companion.StemPressBudType,
+        type: StemPressType
+    ) {
+        val budKey = StemPressPrefs.budKey(bud)
+        val typeKey = StemPressPrefs.typeKey(type)
+        val uri = sharedPreferences.getString(StemPressPrefs.shortcutKey(budKey, typeKey), null)
+        if (uri.isNullOrEmpty()) {
+            Log.w(TAG, "No shortcut configured for $budKey $typeKey press")
+            sendToast(getString(R.string.stem_shortcut_none))
+            return
+        }
+        try {
+            val intent = Intent.parseUri(uri, Intent.URI_INTENT_SCHEME).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            Log.d(TAG, "Launched shortcut for $budKey $typeKey press: $uri")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to launch shortcut for $budKey $typeKey press", e)
+            sendToast(
+                getString(
+                    R.string.stem_shortcut_launch_failed,
+                    e.message ?: e.javaClass.simpleName
+                )
+            )
         }
     }
 
@@ -1683,6 +1725,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 
     private var gestureDetector: GestureDetector? = null
     private var isInCall = false
+    private var isCallRinging = false
     private var callNumber: String? = null
 
     private fun initGestureDetector() {

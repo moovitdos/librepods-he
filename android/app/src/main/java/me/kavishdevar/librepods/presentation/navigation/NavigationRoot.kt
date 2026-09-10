@@ -22,6 +22,8 @@ import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.presentation.MaterialIcons
 import me.kavishdevar.librepods.presentation.components.StyledIconButton
 import me.kavishdevar.librepods.presentation.components.StyledScaffold
+import me.kavishdevar.librepods.presentation.components.stemBudTitle
+import me.kavishdevar.librepods.presentation.components.stemPressTypeTitle
 import me.kavishdevar.librepods.presentation.theme.DesignSystem
 import me.kavishdevar.librepods.presentation.theme.LocalDesignSystem
 import me.kavishdevar.librepods.presentation.viewmodel.AirPodsViewModel
@@ -62,7 +64,9 @@ fun NavigationRoot(
         Screen.HearingAid -> stringResource(R.string.hearing_aid)
         Screen.HearingAidAdjustments -> stringResource(R.string.adjustments)
         Screen.HearingProtection -> stringResource(R.string.hearing_protection)
-        is Screen.LongPress -> currentScreen.bud
+        is Screen.StemBud -> stringResource(stemBudTitle(currentScreen.bud))
+        is Screen.StemPress -> stringResource(stemBudTitle(currentScreen.bud)) + " · " +
+                stringResource(stemPressTypeTitle(currentScreen.type))
         Screen.OpenSourceLicenses -> stringResource(R.string.open_source_licenses)
         Screen.Purchase -> stringResource(R.string.unlock_advanced_features)
         Screen.Rename -> stringResource(R.string.name)
