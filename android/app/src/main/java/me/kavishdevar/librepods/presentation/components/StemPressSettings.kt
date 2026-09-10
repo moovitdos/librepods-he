@@ -48,8 +48,6 @@ fun stemActionLabel(action: StemAction, shortcutName: String?): String = when (a
     StemAction.PREVIOUS_TRACK -> stringResource(R.string.previous_track)
     StemAction.DIGITAL_ASSISTANT -> stringResource(R.string.digital_assistant)
     StemAction.CYCLE_NOISE_CONTROL_MODES -> stringResource(R.string.noise_control)
-    StemAction.VOLUME_UP -> stringResource(R.string.stem_volume_up)
-    StemAction.VOLUME_DOWN -> stringResource(R.string.stem_volume_down)
     StemAction.LAUNCH_SHORTCUT ->
         if (shortcutName.isNullOrEmpty()) stringResource(R.string.stem_action_launch_shortcut)
         else stringResource(R.string.stem_action_launch_shortcut_named, shortcutName)
@@ -62,8 +60,6 @@ fun callStemActionLabel(action: CallStemAction, shortcutName: String?): String =
     CallStemAction.END_CALL -> stringResource(R.string.call_action_end)
     CallStemAction.MUTE -> stringResource(R.string.call_action_mute)
     CallStemAction.CYCLE_NOISE_CONTROL_MODES -> stringResource(R.string.noise_control)
-    CallStemAction.VOLUME_UP -> stringResource(R.string.stem_volume_up)
-    CallStemAction.VOLUME_DOWN -> stringResource(R.string.stem_volume_down)
     CallStemAction.LAUNCH_SHORTCUT ->
         if (shortcutName.isNullOrEmpty()) stringResource(R.string.stem_action_launch_shortcut)
         else stringResource(R.string.stem_action_launch_shortcut_named, shortcutName)

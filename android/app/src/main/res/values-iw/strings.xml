@@ -435,8 +435,6 @@
     <string name="stem_action_launch_shortcut">הפעלת קיצור דרך</string>
     <string name="stem_action_launch_shortcut_named">קיצור דרך: %1$s</string>
     <string name="stem_action_launch_shortcut_description">MacroDroid, Tasker, אפליקציות ועוד</string>
-    <string name="stem_volume_up">הגברת עוצמת שמע</string>
-    <string name="stem_volume_down">הנמכת עוצמת שמע</string>
     <string name="stem_shortcut_title">קיצור דרך</string>
     <string name="stem_shortcut_description">מופעל בטלפון בכל פעם שהלחיצה הזאת מגיעה אליו.</string>
     <string name="stem_shortcut_none">עדיין לא נבחר קיצור דרך</string>

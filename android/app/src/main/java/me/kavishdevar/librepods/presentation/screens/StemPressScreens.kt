@@ -75,8 +75,6 @@ private val ACTION_ORDER = listOf(
     StemAction.PLAY_PAUSE,
     StemAction.NEXT_TRACK,
     StemAction.PREVIOUS_TRACK,
-    StemAction.VOLUME_UP,
-    StemAction.VOLUME_DOWN,
     StemAction.CYCLE_NOISE_CONTROL_MODES,
     StemAction.DIGITAL_ASSISTANT,
     StemAction.LAUNCH_SHORTCUT,

@@ -43,10 +43,6 @@ enum class CallStemAction {
     /** Cycle the listening (noise control) mode, like the normal stem action. */
     CYCLE_NOISE_CONTROL_MODES,
 
-    /** The phone raises / lowers the call volume. */
-    VOLUME_UP,
-    VOLUME_DOWN,
-
     /** The phone starts the shortcut stored under [StemPressPrefs.callShortcutKey]. */
     LAUNCH_SHORTCUT;
 

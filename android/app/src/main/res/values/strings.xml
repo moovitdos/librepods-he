@@ -436,8 +436,6 @@
     <string name="stem_action_launch_shortcut">Launch shortcut</string>
     <string name="stem_action_launch_shortcut_named">Shortcut: %1$s</string>
     <string name="stem_action_launch_shortcut_description">MacroDroid, Tasker, apps and more</string>
-    <string name="stem_volume_up">Volume up</string>
-    <string name="stem_volume_down">Volume down</string>
     <string name="stem_shortcut_title">Shortcut</string>
     <string name="stem_shortcut_description">Runs on the phone whenever this press reaches it.</string>
     <string name="stem_shortcut_none">No shortcut chosen yet</string>
