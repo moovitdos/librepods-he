@@ -406,12 +406,20 @@
     <string name="troubleshooting_share_log_file">Share log file</string>
     <string name="troubleshooting_share">Share</string>
 
-    <!-- Stem press -> automation apps (MacroDroid / Tasker) -->
-    <string name="stem_action_automation">Automation (MacroDroid / Tasker)</string>
-    <string name="stem_action_automation_description">Does nothing on the phone, only notifies automation apps</string>
-    <string name="stem_press_broadcast_title">Broadcast for automation apps</string>
-    <string name="stem_press_broadcast_description">Every press that reaches the phone sends a broadcast with the action below. Use the “Intent Received” trigger in MacroDroid or the “Intent Received” event in Tasker.</string>
-    <string name="stem_press_broadcast_extras" translatable="false">type = single / double / triple / long\nbud = left / right\naction = PLAY_PAUSE / NEXT_TRACK / PREVIOUS_TRACK / CYCLE_NOISE_CONTROL_MODES / DIGITAL_ASSISTANT / LAUNCH_SHORTCUT / AUTOMATION_ONLY</string>
+    <!-- Call Controls -> Customize: press once / press twice during calls, per bud -->
+    <string name="call_custom">Customize</string>
+    <string name="call_custom_description">Your own press once / press twice actions during an active call, per stem</string>
+    <string name="call_custom_title">Customize during a call</string>
+    <string name="call_custom_screen_description">Applies once a call is connected. While ringing, the AirPods always keep their built-in behaviour (press once answers, press twice declines). A press left on “Built-in” keeps doing exactly what Call Controls says, even when the other stem customizes it.</string>
+    <string name="call_action_built_in">Built-in, per Call Controls</string>
+    <string name="call_action_built_in_description">Mutes or hangs up as set in Call Controls</string>
+    <string name="call_action_end">Hang up via the phone</string>
+    <string name="call_action_end_description">Ends the call</string>
+    <string name="call_action_mute">Mute / unmute via the phone</string>
+    <string name="call_action_mute_description">Toggles the microphone; may not work on every phone</string>
+    <string name="toast_call_muted">Microphone muted</string>
+    <string name="toast_call_unmuted">Microphone on</string>
+    <string name="toast_call_mute_failed">Failed to mute: %1$s</string>
 
     <!-- Stem presses: per bud, per press type -->
     <string name="stem_presses">Stem Presses</string>
@@ -423,7 +431,7 @@
     <string name="press_and_hold">Press and Hold</string>
     <string name="next_track">Next track</string>
     <string name="previous_track">Previous track</string>
-    <string name="stem_bud_description">A press you change here is handled by the phone instead of the AirPods. While a call rings or is active, press once and press twice keep their built-in call functions (answer/end, mute).</string>
+    <string name="stem_bud_description">A press you change here is handled by the phone instead of the AirPods. While a call rings or is active, press once and press twice follow Call Controls (and its Customize option) instead.</string>
     <string name="stem_action_built_in">Built-in behaviour, handled by the AirPods themselves</string>
     <string name="stem_action_launch_shortcut">Launch shortcut</string>
     <string name="stem_action_launch_shortcut_named">Shortcut: %1$s</string>

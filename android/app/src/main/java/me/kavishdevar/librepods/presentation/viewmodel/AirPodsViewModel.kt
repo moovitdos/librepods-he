@@ -50,6 +50,7 @@ import me.kavishdevar.librepods.data.AirPodsNotifications
 import me.kavishdevar.librepods.data.Battery
 import me.kavishdevar.librepods.data.BatteryComponent
 import me.kavishdevar.librepods.data.BatteryStatus
+import me.kavishdevar.librepods.data.CallStemAction
 import me.kavishdevar.librepods.data.Capability
 import me.kavishdevar.librepods.data.ControlCommandRepository
 import me.kavishdevar.librepods.data.CustomEq
@@ -92,6 +93,9 @@ data class AirPodsUiState(
     val stemActions: Map<String, StemAction> = emptyMap(),
     /** Label of the shortcut chosen for LAUNCH_SHORTCUT, same keys as [stemActions]. */
     val stemShortcutNames: Map<String, String> = emptyMap(),
+    /** Press once / twice during calls, keyed by [StemPressPrefs.callStateKey] ("left_single_call", ...). */
+    val callStemActions: Map<String, CallStemAction> = emptyMap(),
+    val callStemShortcutNames: Map<String, String> = emptyMap(),
 
     val loudSoundReductionEnabled: Boolean = false,
     val transparencyData: ByteArray = byteArrayOf(),
@@ -318,8 +322,10 @@ class AirPodsViewModel(
                 "head_gestures", "dynamic_end_of_charge", "foss_upgraded",
                 "premium_expiry_time" -> loadSharedPreferences()
                 else -> {
-                    // <bud>_<type>_press_action / _press_shortcut_name, see StemPressPrefs
-                    if (key != null && (key.endsWith("_press_action") || key.endsWith("_press_shortcut_name"))) {
+                    // <bud>_<type>_press[_call]_action / _shortcut_name, see StemPressPrefs
+                    if (key != null && key.contains("_press_") &&
+                        (key.endsWith("_action") || key.endsWith("_shortcut_name"))
+                    ) {
                         loadSharedPreferences()
                     }
                 }
@@ -506,6 +512,19 @@ class AirPodsViewModel(
                     ?.let { stemShortcutNames[StemPressPrefs.stateKey(bud, typeKey)] = it }
             }
         }
+        val callStemActions = mutableMapOf<String, CallStemAction>()
+        val callStemShortcutNames = mutableMapOf<String, String>()
+        for (bud in StemPressPrefs.BUDS) {
+            for (type in StemPressPrefs.CALL_TYPES) {
+                val typeKey = StemPressPrefs.typeKey(type)
+                val key = StemPressPrefs.callStateKey(bud, typeKey)
+                callStemActions[key] = CallStemAction.fromString(
+                    sharedPreferences.getString(StemPressPrefs.callActionKey(bud, typeKey), null)
+                ) ?: CallStemAction.BUILT_IN
+                sharedPreferences.getString(StemPressPrefs.callShortcutNameKey(bud, typeKey), null)
+                    ?.let { callStemShortcutNames[key] = it }
+            }
+        }
         val vendorIdHook = xposedRemotePref.getBoolean("vendor_id_hook", false)
         val dynamicEndOfCharge = sharedPreferences.getBoolean("dynamic_end_of_charge", false)
 
@@ -519,6 +538,8 @@ class AirPodsViewModel(
                 headGesturesEnabled = headGesturesEnabled,
                 stemActions = stemActions,
                 stemShortcutNames = stemShortcutNames,
+                callStemActions = callStemActions,
+                callStemShortcutNames = callStemShortcutNames,
                 vendorIdHook = vendorIdHook,
                 dynamicEndOfCharge = dynamicEndOfCharge,
                 connectionSuccessful = connectionSuccessful,
@@ -777,6 +798,32 @@ class AirPodsViewModel(
         }
         _uiState.update {
             it.copy(stemShortcutNames = it.stemShortcutNames + (StemPressPrefs.stateKey(bud, typeKey) to name))
+        }
+    }
+
+    /** Press once / twice during calls (Call Controls -> Customize). bud = "left" | "right". */
+    fun setCallStemAction(bud: String, type: AACPManager.Companion.StemPressType, action: CallStemAction) {
+        val typeKey = StemPressPrefs.typeKey(type)
+        sharedPreferences.edit { putString(StemPressPrefs.callActionKey(bud, typeKey), action.name) }
+        _uiState.update {
+            it.copy(callStemActions = it.callStemActions + (StemPressPrefs.callStateKey(bud, typeKey) to action))
+        }
+    }
+
+    /** Shortcut run for [CallStemAction.LAUNCH_SHORTCUT] on this bud + press during calls. */
+    fun setCallStemShortcut(
+        bud: String,
+        type: AACPManager.Companion.StemPressType,
+        intentUri: String,
+        name: String
+    ) {
+        val typeKey = StemPressPrefs.typeKey(type)
+        sharedPreferences.edit {
+            putString(StemPressPrefs.callShortcutKey(bud, typeKey), intentUri)
+            putString(StemPressPrefs.callShortcutNameKey(bud, typeKey), name)
+        }
+        _uiState.update {
+            it.copy(callStemShortcutNames = it.callStemShortcutNames + (StemPressPrefs.callStateKey(bud, typeKey) to name))
         }
     }
 

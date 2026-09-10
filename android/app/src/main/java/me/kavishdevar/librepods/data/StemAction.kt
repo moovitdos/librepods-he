@@ -28,17 +28,11 @@ enum class StemAction {
     CYCLE_NOISE_CONTROL_MODES,
 
     /**
-     * Do nothing on the phone. The press is still announced to automation apps
-     * (MacroDroid, Tasker, Automate, ...) through the
-     * [me.kavishdevar.librepods.data.AirPodsNotifications.STEM_PRESS] broadcast,
-     * which is sent for every press that reaches the phone regardless of the action.
-     */
-    AUTOMATION_ONLY,
-
-    /**
      * Start the shortcut the user picked with the system shortcut chooser
      * (a MacroDroid macro, a Tasker task, an app, a contact, ...). The shortcut
      * intent is stored under [StemPressPrefs.shortcutKey] for this bud + press.
+     * Every press that reaches the phone is also announced to automation apps
+     * through the [AirPodsNotifications.STEM_PRESS] broadcast, whatever its action.
      */
     LAUNCH_SHORTCUT;
     companion object {

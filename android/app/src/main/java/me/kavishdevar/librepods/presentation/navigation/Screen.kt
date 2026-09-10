@@ -82,6 +82,17 @@ sealed interface Screen: NavKey {
         val action: String
     ): Screen
 
+    /** Call Controls -> Customize: press once / twice during calls, per bud. */
+    @Serializable
+    data object CallCustom: Screen
+
+    /** Picker for one bud + press during calls. type = "single" | "double". */
+    @Serializable
+    data class CallStemPress(
+        val bud: String,
+        val type: String
+    ): Screen
+
     @Serializable
     data object MicrophoneSettings: Screen
 

@@ -57,7 +57,6 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.bluetooth.AACPManager
 import me.kavishdevar.librepods.bluetooth.AACPManager.Companion.StemPressType
-import me.kavishdevar.librepods.data.AirPodsNotifications
 import me.kavishdevar.librepods.data.StemAction
 import me.kavishdevar.librepods.data.StemPressPrefs
 import me.kavishdevar.librepods.presentation.components.ListItemOrientation
@@ -79,8 +78,64 @@ private val ACTION_ORDER = listOf(
     StemAction.CYCLE_NOISE_CONTROL_MODES,
     StemAction.DIGITAL_ASSISTANT,
     StemAction.LAUNCH_SHORTCUT,
-    StemAction.AUTOMATION_ONLY,
 )
+
+/**
+ * Opens the system shortcut chooser (ACTION_CREATE_SHORTCUT, the same list MacroDroid,
+ * Tasker and launchers use) and hands the picked shortcut to [onPicked] as an intent URI
+ * (`Intent.toUri(URI_INTENT_SCHEME)`) plus a label. Returns the function that opens it.
+ */
+@Composable
+internal fun rememberShortcutPicker(onPicked: (intentUri: String, name: String) -> Unit): () -> Unit {
+    val context = LocalContext.current
+    val unsupportedText = stringResource(R.string.stem_shortcut_unsupported)
+    val chooserTitle = stringResource(R.string.stem_shortcut_chooser_title)
+
+    @Suppress("DEPRECATION")
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        if (result.resultCode != Activity.RESULT_OK || data == null) return@rememberLauncherForActivityResult
+        // Legacy shortcut result: what MacroDroid, Tasker, Button Mapper etc. consume too.
+        val shortcutIntent = IntentCompat.getParcelableExtra(
+            data, Intent.EXTRA_SHORTCUT_INTENT, Intent::class.java
+        )
+        val name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
+        if (shortcutIntent == null) {
+            Toast.makeText(context, unsupportedText, Toast.LENGTH_LONG).show()
+            return@rememberLauncherForActivityResult
+        }
+        onPicked(
+            shortcutIntent.toUri(Intent.URI_INTENT_SCHEME),
+            name?.takeIf { it.isNotBlank() }
+                ?: shortcutIntent.component?.packageName
+                ?: shortcutIntent.action
+                ?: ""
+        )
+    }
+    return {
+        launcher.launch(
+            Intent.createChooser(Intent(Intent.ACTION_CREATE_SHORTCUT), chooserTitle)
+        )
+    }
+}
+
+/** Card showing the chosen shortcut (or that none is chosen yet); tapping opens the chooser. */
+@Composable
+internal fun ShortcutCard(shortcutName: String?, pickShortcut: () -> Unit) {
+    StyledList(
+        title = stringResource(R.string.stem_shortcut_title),
+        description = stringResource(R.string.stem_shortcut_description)
+    ) {
+        StyledListItem(
+            name = shortcutName?.takeIf { it.isNotEmpty() }
+                ?: stringResource(R.string.stem_shortcut_none),
+            description = stringResource(R.string.stem_shortcut_change),
+            onClick = pickShortcut
+        )
+    }
+}
 
 /**
  * The four press types of one stem (press once / twice / three times / hold),
@@ -134,9 +189,9 @@ fun StemBudScreen(
 
 /**
  * Picks the action of one bud + press. typeKey = "single" | "double" | "triple" | "long".
- * For LAUNCH_SHORTCUT the system shortcut chooser (ACTION_CREATE_SHORTCUT) is opened and
- * the returned shortcut intent is stored; press-and-hold + listening mode also shows the
- * list of modes to cycle through, like the original press-and-hold screen.
+ * For LAUNCH_SHORTCUT the system shortcut chooser is opened and the returned shortcut
+ * intent is stored; press-and-hold + listening mode also shows the list of modes to
+ * cycle through, like the original press-and-hold screen.
  */
 @ExperimentalHazeMaterialsApi
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +203,6 @@ fun StemPressActionScreen(
     navigateToPurchase: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
 
     val type = StemPressPrefs.typeFromKey(typeKey) ?: StemPressType.LONG_PRESS
     val stateKey = StemPressPrefs.stateKey(bud, typeKey)
@@ -156,39 +210,9 @@ fun StemPressActionScreen(
     val currentAction = state.stemActions[stateKey] ?: defaultAction
     val shortcutName = state.stemShortcutNames[stateKey]
 
-    val unsupportedText = stringResource(R.string.stem_shortcut_unsupported)
-    val chooserTitle = stringResource(R.string.stem_shortcut_chooser_title)
-
-    @Suppress("DEPRECATION")
-    val shortcutPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val data = result.data
-        if (result.resultCode != Activity.RESULT_OK || data == null) return@rememberLauncherForActivityResult
-        // Legacy shortcut result: what MacroDroid, Tasker, Button Mapper etc. consume too.
-        val shortcutIntent = IntentCompat.getParcelableExtra(
-            data, Intent.EXTRA_SHORTCUT_INTENT, Intent::class.java
-        )
-        val name = data.getStringExtra(Intent.EXTRA_SHORTCUT_NAME)
-        if (shortcutIntent == null) {
-            Toast.makeText(context, unsupportedText, Toast.LENGTH_LONG).show()
-            return@rememberLauncherForActivityResult
-        }
-        viewModel.setStemShortcut(
-            bud = bud,
-            type = type,
-            intentUri = shortcutIntent.toUri(Intent.URI_INTENT_SCHEME),
-            name = name?.takeIf { it.isNotBlank() }
-                ?: shortcutIntent.component?.packageName
-                ?: shortcutIntent.action
-                ?: ""
-        )
+    val pickShortcut = rememberShortcutPicker { intentUri, name ->
+        viewModel.setStemShortcut(bud, type, intentUri, name)
         viewModel.setStemAction(bud, type, StemAction.LAUNCH_SHORTCUT)
-    }
-    val pickShortcut = {
-        shortcutPicker.launch(
-            Intent.createChooser(Intent(Intent.ACTION_CREATE_SHORTCUT), chooserTitle)
-        )
     }
 
     val m3eEnabled = LocalDesignSystem.current == DesignSystem.Material
@@ -215,7 +239,6 @@ fun StemPressActionScreen(
                     defaultAction -> stringResource(R.string.stem_action_built_in)
                     StemAction.LAUNCH_SHORTCUT ->
                         shortcutName ?: stringResource(R.string.stem_action_launch_shortcut_description)
-                    StemAction.AUTOMATION_ONLY -> stringResource(R.string.stem_action_automation_description)
                     else -> null
                 }
                 StyledListItem(
@@ -255,34 +278,7 @@ fun StemPressActionScreen(
 
         if (currentAction == StemAction.LAUNCH_SHORTCUT) {
             Spacer(modifier = Modifier.height(32.dp))
-
-            StyledList(
-                title = stringResource(R.string.stem_shortcut_title),
-                description = stringResource(R.string.stem_shortcut_description)
-            ) {
-                StyledListItem(
-                    name = shortcutName?.takeIf { it.isNotEmpty() }
-                        ?: stringResource(R.string.stem_shortcut_none),
-                    description = stringResource(R.string.stem_shortcut_change),
-                    onClick = pickShortcut
-                )
-            }
-        }
-
-        if (currentAction == StemAction.AUTOMATION_ONLY) {
-            Spacer(modifier = Modifier.height(32.dp))
-
-            StyledList(
-                title = stringResource(R.string.stem_press_broadcast_title),
-                description = stringResource(R.string.stem_press_broadcast_description)
-            ) {
-                StyledListItem(
-                    name = AirPodsNotifications.STEM_PRESS,
-                    description = stringResource(R.string.stem_press_broadcast_extras),
-                    onClick = null,
-                    orientation = ListItemOrientation.Vertical
-                )
-            }
+            ShortcutCard(shortcutName = shortcutName, pickShortcut = pickShortcut)
         }
 
         if (type == StemPressType.LONG_PRESS && currentAction == StemAction.CYCLE_NOISE_CONTROL_MODES) {

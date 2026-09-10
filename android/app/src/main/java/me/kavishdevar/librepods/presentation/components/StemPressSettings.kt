@@ -22,6 +22,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import me.kavishdevar.librepods.R
+import me.kavishdevar.librepods.data.CallStemAction
 import me.kavishdevar.librepods.data.StemAction
 import me.kavishdevar.librepods.data.StemPressPrefs
 
@@ -47,8 +48,18 @@ fun stemActionLabel(action: StemAction, shortcutName: String?): String = when (a
     StemAction.PREVIOUS_TRACK -> stringResource(R.string.previous_track)
     StemAction.DIGITAL_ASSISTANT -> stringResource(R.string.digital_assistant)
     StemAction.CYCLE_NOISE_CONTROL_MODES -> stringResource(R.string.noise_control)
-    StemAction.AUTOMATION_ONLY -> stringResource(R.string.stem_action_automation)
     StemAction.LAUNCH_SHORTCUT ->
+        if (shortcutName.isNullOrEmpty()) stringResource(R.string.stem_action_launch_shortcut)
+        else stringResource(R.string.stem_action_launch_shortcut_named, shortcutName)
+}
+
+/** Label of a press once / press twice action during calls (Call Controls -> Customize). */
+@Composable
+fun callStemActionLabel(action: CallStemAction, shortcutName: String?): String = when (action) {
+    CallStemAction.BUILT_IN -> stringResource(R.string.call_action_built_in)
+    CallStemAction.END_CALL -> stringResource(R.string.call_action_end)
+    CallStemAction.MUTE -> stringResource(R.string.call_action_mute)
+    CallStemAction.LAUNCH_SHORTCUT ->
         if (shortcutName.isNullOrEmpty()) stringResource(R.string.stem_action_launch_shortcut)
         else stringResource(R.string.stem_action_launch_shortcut_named, shortcutName)
 }

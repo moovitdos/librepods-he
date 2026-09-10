@@ -99,6 +99,7 @@ import me.kavishdevar.librepods.data.BatteryStatus
 import me.kavishdevar.librepods.data.Capability
 import me.kavishdevar.librepods.data.CustomEq
 import me.kavishdevar.librepods.data.NoiseControlMode
+import me.kavishdevar.librepods.data.CallStemAction
 import me.kavishdevar.librepods.data.StemAction
 import me.kavishdevar.librepods.data.StemPressPrefs
 import me.kavishdevar.librepods.data.XposedRemotePrefProvider
@@ -196,6 +197,12 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 
         var leftLongPressAction: StemAction = StemAction.defaultActions[StemPressType.LONG_PRESS]!!,
         var rightLongPressAction: StemAction = StemAction.defaultActions[StemPressType.LONG_PRESS]!!,
+
+        // Press once / press twice while a call rings or is active (Call Controls -> Customize)
+        var leftSingleCallAction: CallStemAction = CallStemAction.BUILT_IN,
+        var rightSingleCallAction: CallStemAction = CallStemAction.BUILT_IN,
+        var leftDoubleCallAction: CallStemAction = CallStemAction.BUILT_IN,
+        var rightDoubleCallAction: CallStemAction = CallStemAction.BUILT_IN,
 
         var cameraAction: StemPressType? = null,
 
@@ -855,14 +862,27 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             TAG,
             "Setting up stem actions: Single Press Customized: $singlePressCustomized, Double Press Customized: $doublePressCustomized, Triple Press Customized: $triplePressCustomized, Long Press Customized: $longPressCustomized"
         )
-        // While a call rings or is active the AirPods' built-in call controls must win
-        // (press once = answer/end, press twice = mute, see Call Controls), so press
-        // once and press twice are handed back to the AirPods for the duration.
-        val callActive = isInCall || isCallRinging
-        if (callActive) Log.d(TAG, "Call active: press once / press twice stay built-in")
+        // Press once and press twice belong to the call while one rings or is active:
+        // - ringing: always built-in (press once answers, press twice declines), never forwarded;
+        // - active call: built-in (mute / hang up, see Call Controls) unless a bud has a custom
+        //   action for that press under Call Controls -> Customize, then it is forwarded.
+        // Press three times and press and hold keep the normal configuration throughout.
+        val singleCallCustomized =
+            config.leftSingleCallAction != CallStemAction.BUILT_IN || config.rightSingleCallAction != CallStemAction.BUILT_IN
+        val doubleCallCustomized =
+            config.leftDoubleCallAction != CallStemAction.BUILT_IN || config.rightDoubleCallAction != CallStemAction.BUILT_IN
+        val (singleForwarded, doubleForwarded) = when {
+            isCallRinging -> false to false
+            isInCall -> singleCallCustomized to doubleCallCustomized
+            else -> singlePressCustomized to doublePressCustomized
+        }
+        if (isCallRinging || isInCall) Log.d(
+            TAG,
+            "Call (ringing=$isCallRinging, active=$isInCall): press once forwarded=$singleForwarded, press twice forwarded=$doubleForwarded"
+        )
         aacpManager.sendStemConfigPacket(
-            singlePressCustomized && !callActive,
-            doublePressCustomized && !callActive,
+            singleForwarded,
+            doubleForwarded,
             triplePressCustomized,
             longPressCustomized,
         )
@@ -1109,15 +1129,20 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             override fun onStemPressReceived(stemPress: ByteArray) {
 
                 val (stemPressType, bud) = aacpManager.parseStemPressResponse(stemPress)
+                // Press once / press twice during an ACTIVE call follow the call profile instead
+                // (while ringing they stay built-in and never reach the phone).
+                val callAction = if (isInCall) getCallActionFor(bud, stemPressType) else null
                 val action = getActionFor(bud, stemPressType)
 
                 Log.d(
                     "AirPodsParser",
-                    "Stem press received: $stemPressType on $bud, action: $action, cameraActive: $cameraActive, cameraAction: ${config.cameraAction}"
+                    "Stem press received: $stemPressType on $bud, action: $action, callAction: $callAction, cameraActive: $cameraActive, cameraAction: ${config.cameraAction}"
                 )
                 // Always tell automation apps first; what LibrePods itself does is independent.
-                broadcastStemPress(stemPressType, bud, action)
-                if (cameraActive && config.cameraAction != null && stemPressType == config.cameraAction) {
+                broadcastStemPress(stemPressType, bud, callAction?.name ?: action?.name)
+                if (callAction != null) {
+                    executeCallStemAction(callAction, bud, stemPressType)
+                } else if (cameraActive && config.cameraAction != null && stemPressType == config.cameraAction) {
                         Runtime.getRuntime().exec(arrayOf("su", "-c", "input keyevent 27"))
                 } else {
                     action?.let { executeStemAction(it, bud, stemPressType) }
@@ -1221,7 +1246,7 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     private fun broadcastStemPress(
         type: StemPressType,
         bud: AACPManager.Companion.StemPressBudType,
-        action: StemAction?
+        actionName: String?
     ) {
         val typeName = StemPressPrefs.typeKey(type)
         val budName = StemPressPrefs.budKey(bud)
@@ -1229,9 +1254,83 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
             putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_TYPE, typeName)
             putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_BUD, budName)
-            putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_ACTION, action?.name ?: "")
+            putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_ACTION, actionName ?: "")
         })
-        Log.d(TAG, "Broadcast stem press: $typeName $budName (${action?.name})")
+        Log.d(TAG, "Broadcast stem press: $typeName $budName ($actionName)")
+    }
+
+    /** Reads a `<bud>_<type>_press_action` pref; unknown values fall back to the built-in default. */
+    private fun stemActionPref(key: String, type: StemPressType): StemAction {
+        val default = StemAction.defaultActions[type]!!
+        return StemAction.fromString(sharedPreferences.getString(key, null) ?: default.name) ?: default
+    }
+
+    /** Reads a `<bud>_<type>_press_call_action` pref (Call Controls -> Customize). */
+    private fun callStemActionPref(key: String): CallStemAction =
+        CallStemAction.fromString(sharedPreferences.getString(key, null)) ?: CallStemAction.BUILT_IN
+
+    /** The call-profile action of a press, or null for presses without one (three times, hold). */
+    private fun getCallActionFor(
+        bud: AACPManager.Companion.StemPressBudType, type: StemPressType
+    ): CallStemAction? {
+        val left = bud == AACPManager.Companion.StemPressBudType.LEFT
+        return when (type) {
+            StemPressType.SINGLE_PRESS -> if (left) config.leftSingleCallAction else config.rightSingleCallAction
+            StemPressType.DOUBLE_PRESS -> if (left) config.leftDoubleCallAction else config.rightDoubleCallAction
+            else -> null
+        }
+    }
+
+    /**
+     * Runs press once / press twice during an active call. Only reached when a bud customized
+     * that press (Call Controls -> Customize), which makes the AirPods forward it for both buds,
+     * so BUILT_IN re-creates on the phone what the AirPods would have done themselves.
+     */
+    private fun executeCallStemAction(
+        action: CallStemAction,
+        bud: AACPManager.Companion.StemPressBudType,
+        type: StemPressType
+    ) {
+        Log.d(TAG, "Call stem action $action for $bud $type")
+        when (action) {
+            CallStemAction.BUILT_IN -> {
+                // Call Controls (0x24): by default press once mutes and press twice hangs up,
+                // "flipped" (second byte 0x02) swaps the two. The status list keeps older
+                // entries when the value changes, so the LAST one is the current value.
+                val flipped = aacpManager.controlCommandStatusList
+                    .lastOrNull { it.identifier == AACPManager.Companion.ControlCommandIdentifiers.CALL_MANAGEMENT_CONFIG }
+                    ?.value?.getOrNull(1) == 0x02.toByte()
+                val mutes = (type == StemPressType.SINGLE_PRESS) != flipped
+                if (mutes) toggleCallMute() else stemEndCall()
+            }
+
+            CallStemAction.END_CALL -> stemEndCall()
+            CallStemAction.MUTE -> toggleCallMute()
+            CallStemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type, duringCall = true)
+        }
+    }
+
+    private fun stemEndCall() {
+        try {
+            endCallOrThrow()
+        } catch (e: Exception) {
+            Log.e(TAG, "Stem press: failed to end call", e)
+            sendToast(getString(R.string.toast_failed_to_reject_call, e.message))
+        }
+    }
+
+    /** Mutes / unmutes the microphone of the current call (no public API for third-party apps; this is the usual workaround). */
+    private fun toggleCallMute() {
+        try {
+            val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+            val muted = !audioManager.isMicrophoneMute
+            audioManager.isMicrophoneMute = muted
+            Log.d(TAG, "Call microphone muted: $muted")
+            sendToast(getString(if (muted) R.string.toast_call_muted else R.string.toast_call_unmuted))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to toggle call mute", e)
+            sendToast(getString(R.string.toast_call_mute_failed, e.message))
+        }
     }
 
     /**
@@ -1270,23 +1369,24 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 })
             }
 
-            StemAction.AUTOMATION_ONLY -> {
-                // The STEM_PRESS broadcast already went out in onStemPressReceived.
-                Log.d("AirPodsParser", "Automation-only action, nothing to do on the phone")
-            }
-
             StemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type)
         }
     }
 
-    /** Starts the shortcut picked in the settings for this bud + press ([StemAction.LAUNCH_SHORTCUT]). */
+    /**
+     * Starts the shortcut picked in the settings for this bud + press
+     * ([StemAction.LAUNCH_SHORTCUT], or [CallStemAction.LAUNCH_SHORTCUT] when [duringCall]).
+     */
     private fun launchStemShortcut(
         bud: AACPManager.Companion.StemPressBudType,
-        type: StemPressType
+        type: StemPressType,
+        duringCall: Boolean = false
     ) {
         val budKey = StemPressPrefs.budKey(bud)
         val typeKey = StemPressPrefs.typeKey(type)
-        val uri = sharedPreferences.getString(StemPressPrefs.shortcutKey(budKey, typeKey), null)
+        val prefKey = if (duringCall) StemPressPrefs.callShortcutKey(budKey, typeKey)
+        else StemPressPrefs.shortcutKey(budKey, typeKey)
+        val uri = sharedPreferences.getString(prefKey, null)
         if (uri.isNullOrEmpty()) {
             Log.w(TAG, "No shortcut configured for $budKey $typeKey press")
             sendToast(getString(R.string.stem_shortcut_none))
@@ -1470,50 +1570,21 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 "takeover_when_media_start", false
             ),
 
-            // Stem actions
-            leftSinglePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "left_single_press_action", "PLAY_PAUSE"
-                ) ?: "PLAY_PAUSE"
-            )!!,
-            rightSinglePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "right_single_press_action", "PLAY_PAUSE"
-                ) ?: "PLAY_PAUSE"
-            )!!,
+            // Stem actions (an unknown stored value, e.g. from another build, falls back to the default)
+            leftSinglePressAction = stemActionPref("left_single_press_action", StemPressType.SINGLE_PRESS),
+            rightSinglePressAction = stemActionPref("right_single_press_action", StemPressType.SINGLE_PRESS),
+            leftDoublePressAction = stemActionPref("left_double_press_action", StemPressType.DOUBLE_PRESS),
+            rightDoublePressAction = stemActionPref("right_double_press_action", StemPressType.DOUBLE_PRESS),
+            leftTriplePressAction = stemActionPref("left_triple_press_action", StemPressType.TRIPLE_PRESS),
+            rightTriplePressAction = stemActionPref("right_triple_press_action", StemPressType.TRIPLE_PRESS),
+            leftLongPressAction = stemActionPref("left_long_press_action", StemPressType.LONG_PRESS),
+            rightLongPressAction = stemActionPref("right_long_press_action", StemPressType.LONG_PRESS),
 
-            leftDoublePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "left_double_press_action", "PREVIOUS_TRACK"
-                ) ?: "NEXT_TRACK"
-            )!!,
-            rightDoublePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "right_double_press_action", "NEXT_TRACK"
-                ) ?: "NEXT_TRACK"
-            )!!,
-
-            leftTriplePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "left_triple_press_action", "PREVIOUS_TRACK"
-                ) ?: "PREVIOUS_TRACK"
-            )!!,
-            rightTriplePressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "right_triple_press_action", "PREVIOUS_TRACK"
-                ) ?: "PREVIOUS_TRACK"
-            )!!,
-
-            leftLongPressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "left_long_press_action", "CYCLE_NOISE_CONTROL_MODES"
-                ) ?: "CYCLE_NOISE_CONTROL_MODES"
-            )!!,
-            rightLongPressAction = StemAction.fromString(
-                sharedPreferences.getString(
-                    "right_long_press_action", "DIGITAL_ASSISTANT"
-                ) ?: "DIGITAL_ASSISTANT"
-            )!!,
+            // During calls (Call Controls -> Customize)
+            leftSingleCallAction = callStemActionPref(StemPressPrefs.callActionKey(StemPressPrefs.LEFT, "single")),
+            rightSingleCallAction = callStemActionPref(StemPressPrefs.callActionKey(StemPressPrefs.RIGHT, "single")),
+            leftDoubleCallAction = callStemActionPref(StemPressPrefs.callActionKey(StemPressPrefs.LEFT, "double")),
+            rightDoubleCallAction = callStemActionPref(StemPressPrefs.callActionKey(StemPressPrefs.RIGHT, "double")),
 
             cameraAction = sharedPreferences.getString("camera_action", null)
                 ?.let { StemPressType.valueOf(it) },
@@ -1587,59 +1658,62 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 preferences.getBoolean(key, true)
 
             "left_single_press_action" -> {
-                config.leftSinglePressAction = StemAction.fromString(
-                    preferences.getString(key, "PLAY_PAUSE") ?: "PLAY_PAUSE"
-                )!!
+                config.leftSinglePressAction = stemActionPref(key, StemPressType.SINGLE_PRESS)
                 setupStemActions()
             }
 
             "right_single_press_action" -> {
-                config.rightSinglePressAction = StemAction.fromString(
-                    preferences.getString(key, "PLAY_PAUSE") ?: "PLAY_PAUSE"
-                )!!
+                config.rightSinglePressAction = stemActionPref(key, StemPressType.SINGLE_PRESS)
                 setupStemActions()
             }
 
             "left_double_press_action" -> {
-                config.leftDoublePressAction = StemAction.fromString(
-                    preferences.getString(key, "PREVIOUS_TRACK") ?: "PREVIOUS_TRACK"
-                )!!
+                config.leftDoublePressAction = stemActionPref(key, StemPressType.DOUBLE_PRESS)
                 setupStemActions()
             }
 
             "right_double_press_action" -> {
-                config.rightDoublePressAction = StemAction.fromString(
-                    preferences.getString(key, "NEXT_TRACK") ?: "NEXT_TRACK"
-                )!!
+                config.rightDoublePressAction = stemActionPref(key, StemPressType.DOUBLE_PRESS)
                 setupStemActions()
             }
 
             "left_triple_press_action" -> {
-                config.leftTriplePressAction = StemAction.fromString(
-                    preferences.getString(key, "PREVIOUS_TRACK") ?: "PREVIOUS_TRACK"
-                )!!
+                config.leftTriplePressAction = stemActionPref(key, StemPressType.TRIPLE_PRESS)
                 setupStemActions()
             }
 
             "right_triple_press_action" -> {
-                config.rightTriplePressAction = StemAction.fromString(
-                    preferences.getString(key, "PREVIOUS_TRACK") ?: "PREVIOUS_TRACK"
-                )!!
+                config.rightTriplePressAction = stemActionPref(key, StemPressType.TRIPLE_PRESS)
                 setupStemActions()
             }
 
             "left_long_press_action" -> {
-                config.leftLongPressAction = StemAction.fromString(
-                    preferences.getString(key, "CYCLE_NOISE_CONTROL_MODES")
-                        ?: "CYCLE_NOISE_CONTROL_MODES"
-                )!!
+                config.leftLongPressAction = stemActionPref(key, StemPressType.LONG_PRESS)
                 setupStemActions()
             }
 
             "right_long_press_action" -> {
-                config.rightLongPressAction = StemAction.fromString(
-                    preferences.getString(key, "DIGITAL_ASSISTANT") ?: "DIGITAL_ASSISTANT"
-                )!!
+                config.rightLongPressAction = stemActionPref(key, StemPressType.LONG_PRESS)
+                setupStemActions()
+            }
+
+            "left_single_press_call_action" -> {
+                config.leftSingleCallAction = callStemActionPref(key)
+                setupStemActions()
+            }
+
+            "right_single_press_call_action" -> {
+                config.rightSingleCallAction = callStemActionPref(key)
+                setupStemActions()
+            }
+
+            "left_double_press_call_action" -> {
+                config.leftDoubleCallAction = callStemActionPref(key)
+                setupStemActions()
+            }
+
+            "right_double_press_call_action" -> {
+                config.rightDoubleCallAction = callStemActionPref(key)
                 setupStemActions()
             }
 
@@ -2217,24 +2291,10 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         }
     }
 
+    /** Head gesture "yes": answer the ringing call. */
     private fun answerCall() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
-                if (checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
-                    telecomManager.acceptRingingCall() // TODO: Switch to InCallService (needs CDM association)
-                }
-            } else {
-                val telephonyService = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
-                val telephonyClass = Class.forName(telephonyService.javaClass.name)
-                val method = telephonyClass.getDeclaredMethod("getITelephony")
-                method.isAccessible = true
-                val telephonyInterface = method.invoke(telephonyService)
-                val answerCallMethod =
-                    telephonyInterface.javaClass.getDeclaredMethod("answerRingingCall")
-                answerCallMethod.invoke(telephonyInterface)
-            }
-
+            acceptCallOrThrow()
             sendToast(getString(R.string.toast_call_answered_head_gesture))
         } catch (e: Exception) {
             e.printStackTrace()
@@ -2244,29 +2304,57 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         }
     }
 
+    /** Head gesture "no": reject the ringing call. */
     private fun rejectCall() {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
-                if (checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
-                    telecomManager.endCall() // TODO: Switch to InCallService (needs CDM association)
-                }
-            } else {
-                val telephonyService = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
-                val telephonyClass = Class.forName(telephonyService.javaClass.name)
-                val method = telephonyClass.getDeclaredMethod("getITelephony")
-                method.isAccessible = true
-                val telephonyInterface = method.invoke(telephonyService)
-                val endCallMethod = telephonyInterface.javaClass.getDeclaredMethod("endCall")
-                endCallMethod.invoke(telephonyInterface)
-            }
-
+            endCallOrThrow()
             sendToast(getString(R.string.toast_call_rejected_head_gesture))
         } catch (e: Exception) {
             e.printStackTrace()
             sendToast(getString(R.string.toast_failed_to_reject_call, e.message))
         } finally {
             islandWindow?.close()
+        }
+    }
+
+    /** Accepts the ringing call (TelecomManager, or ITelephony before Android 10). Throws on failure. */
+    private fun acceptCallOrThrow() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
+            if (checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
+                telecomManager.acceptRingingCall() // TODO: Switch to InCallService (needs CDM association)
+            } else {
+                throw IllegalStateException("ANSWER_PHONE_CALLS permission not granted")
+            }
+        } else {
+            val telephonyService = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+            val telephonyClass = Class.forName(telephonyService.javaClass.name)
+            val method = telephonyClass.getDeclaredMethod("getITelephony")
+            method.isAccessible = true
+            val telephonyInterface = method.invoke(telephonyService)
+            val answerCallMethod =
+                telephonyInterface.javaClass.getDeclaredMethod("answerRingingCall")
+            answerCallMethod.invoke(telephonyInterface)
+        }
+    }
+
+    /** Ends the active call or declines the ringing one. Throws on failure. */
+    private fun endCallOrThrow() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val telecomManager = getSystemService(TELECOM_SERVICE) as TelecomManager
+            if (checkSelfPermission(Manifest.permission.ANSWER_PHONE_CALLS) == PackageManager.PERMISSION_GRANTED) {
+                telecomManager.endCall() // TODO: Switch to InCallService (needs CDM association)
+            } else {
+                throw IllegalStateException("ANSWER_PHONE_CALLS permission not granted")
+            }
+        } else {
+            val telephonyService = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+            val telephonyClass = Class.forName(telephonyService.javaClass.name)
+            val method = telephonyClass.getDeclaredMethod("getITelephony")
+            method.isAccessible = true
+            val telephonyInterface = method.invoke(telephonyService)
+            val endCallMethod = telephonyInterface.javaClass.getDeclaredMethod("endCall")
+            endCallMethod.invoke(telephonyInterface)
         }
     }
 

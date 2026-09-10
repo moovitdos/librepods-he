@@ -143,6 +143,7 @@ fun AirPodsSettingsRoute(
     navigateToVersion: () -> Unit,
     navigateToTroubleshooting: () -> Unit,
     navigateToCallControlScreen: (action: String) -> Unit,
+    navigateToCallCustom: () -> Unit,
     navigateToMicrophoneSettings: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -187,6 +188,7 @@ fun AirPodsSettingsRoute(
             navigateToVersion = navigateToVersion,
             navigateToTroubleshooting = navigateToTroubleshooting,
             navigateToCallControlScreen = navigateToCallControlScreen,
+            navigateToCallCustom = navigateToCallCustom,
             navigateToMicrophoneSettings = navigateToMicrophoneSettings,
 
             activateDemoMode = viewModel::activateDemoMode,
@@ -228,6 +230,7 @@ fun AirPodsSettingsScreen(
         navigateToVersion: () -> Unit,
         navigateToTroubleshooting: () -> Unit,
         navigateToCallControlScreen: (action: String) -> Unit,
+        navigateToCallCustom: () -> Unit,
         navigateToMicrophoneSettings: () -> Unit,
 
         activateDemoMode: () -> Unit,
@@ -389,7 +392,8 @@ fun AirPodsSettingsScreen(
                 }
                 CallControlSettings(
                     flipped = flipped,
-                    navigateToCallControlScreen = navigateToCallControlScreen
+                    navigateToCallControlScreen = navigateToCallControlScreen,
+                    navigateToCallCustom = navigateToCallCustom
                 )
             }
 
@@ -976,6 +980,7 @@ fun AirPodsSettingsScreenPreviewApple() {
                 navigateToVersion = {},
                 navigateToTroubleshooting = {},
                 navigateToCallControlScreen = {},
+                navigateToCallCustom = {},
                 navigateToMicrophoneSettings = {},
 
                 activateDemoMode = {},
@@ -1022,6 +1027,7 @@ fun AirPodsSettingsScreenPreviewMaterial() {
                 navigateToVersion = {},
                 navigateToTroubleshooting = {},
                 navigateToCallControlScreen = {},
+                navigateToCallCustom = {},
                 navigateToMicrophoneSettings = {},
 
                 activateDemoMode = {},

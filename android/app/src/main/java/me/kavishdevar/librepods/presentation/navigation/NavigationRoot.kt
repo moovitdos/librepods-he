@@ -75,6 +75,8 @@ fun NavigationRoot(
         Screen.UpdateHearingTest -> stringResource(R.string.update_hearing_test)
         Screen.VersionInfo -> stringResource(R.string.version)
         is Screen.CallControl -> currentScreen.action
+        Screen.CallCustom -> stringResource(R.string.call_custom_title)
+        is Screen.CallStemPress -> stringResource(stemPressTypeTitle(currentScreen.type))
         Screen.MicrophoneSettings -> stringResource(R.string.microphone_mode)
         Screen.ReleaseNotes -> ""
     }

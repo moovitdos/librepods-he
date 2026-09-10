@@ -405,11 +405,20 @@
     <string name="troubleshooting_share_log_file">שתף קובץ יומן</string>
     <string name="troubleshooting_share">שתף</string>
 
-    <!-- לחיצת ידית -> אפליקציות אוטומציה (MacroDroid / Tasker) -->
-    <string name="stem_action_automation">אוטומציה (MacroDroid / Tasker)</string>
-    <string name="stem_action_automation_description">לא מבצע כלום בטלפון, רק מודיע לאפליקציות אוטומציה</string>
-    <string name="stem_press_broadcast_title">שידור לאפליקציות אוטומציה</string>
-    <string name="stem_press_broadcast_description">כל לחיצה שמגיעה לטלפון שולחת broadcast עם ה-action שלמטה. ב-MacroDroid השתמשו בטריגר ״Intent Received״, וב-Tasker באירוע ״Intent Received״.</string>
+    <!-- בקרת שיחות -> התאמה אישית: לחיצה אחת / כפולה בזמן שיחה, לכל אוזניה -->
+    <string name="call_custom">התאמה אישית</string>
+    <string name="call_custom_description">פעולות משלכם ללחיצה אחת וכפולה בזמן שיחה פעילה, לכל ידית</string>
+    <string name="call_custom_title">התאמה אישית בשיחה</string>
+    <string name="call_custom_screen_description">חל מרגע שהשיחה מחוברת. בזמן צלצול האוזניות תמיד שומרות על ההתנהגות המובנית (לחיצה אחת עונה, לחיצה כפולה דוחה). לחיצה שנשארת על ״מובנה״ ממשיכה לעשות בדיוק מה שנקבע בבקרת שיחות, גם כשהידית השנייה מותאמת.</string>
+    <string name="call_action_built_in">מובנה, לפי בקרת שיחות</string>
+    <string name="call_action_built_in_description">משתיק או מנתק לפי בקרת שיחות</string>
+    <string name="call_action_end">ניתוק דרך הטלפון</string>
+    <string name="call_action_end_description">מסיים את השיחה</string>
+    <string name="call_action_mute">השתקה / ביטול השתקה דרך הטלפון</string>
+    <string name="call_action_mute_description">מחליף את מצב המיקרופון; ייתכן שלא יעבוד בכל טלפון</string>
+    <string name="toast_call_muted">המיקרופון מושתק</string>
+    <string name="toast_call_unmuted">המיקרופון פועל</string>
+    <string name="toast_call_mute_failed">ההשתקה נכשלה: %1$s</string>
 
     <!-- לחיצות על הידית: לכל אוזניה ולכל סוג לחיצה -->
     <string name="stem_presses">לחיצות על הידית</string>
@@ -421,7 +430,7 @@
     <string name="press_and_hold">לחיצה ארוכה</string>
     <string name="next_track">השיר הבא</string>
     <string name="previous_track">השיר הקודם</string>
-    <string name="stem_bud_description">לחיצה ששיניתם כאן מטופלת בטלפון במקום באוזניות. בזמן שיחה נכנסת או פעילה, לחיצה אחת ולחיצה כפולה שומרות על תפקידי השיחה המובנים (מענה/ניתוק, השתקה).</string>
+    <string name="stem_bud_description">לחיצה ששיניתם כאן מטופלת בטלפון במקום באוזניות. בזמן צלצול או שיחה, לחיצה אחת ולחיצה כפולה פועלות לפי בקרת שיחות (ואפשרות ההתאמה האישית שם) במקום זה.</string>
     <string name="stem_action_built_in">התנהגות מובנית, מטופלת באוזניות עצמן</string>
     <string name="stem_action_launch_shortcut">הפעלת קיצור דרך</string>
     <string name="stem_action_launch_shortcut_named">קיצור דרך: %1$s</string>

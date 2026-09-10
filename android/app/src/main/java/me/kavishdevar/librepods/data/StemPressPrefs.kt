@@ -57,4 +57,19 @@ object StemPressPrefs {
 
     /** Key of the UI state maps, e.g. `left_single`. */
     fun stateKey(bud: String, type: String) = "${bud}_${type}"
+
+    /** Press types with a built-in call function, customizable under Call Controls -> Customize. */
+    val CALL_TYPES = listOf(StemPressType.SINGLE_PRESS, StemPressType.DOUBLE_PRESS)
+
+    /** e.g. `left_single_press_call_action`. Value: a [CallStemAction] name. */
+    fun callActionKey(bud: String, type: String) = "${bud}_${type}_press_call_action"
+
+    /** Intent URI of the shortcut run by [CallStemAction.LAUNCH_SHORTCUT] during calls. */
+    fun callShortcutKey(bud: String, type: String) = "${bud}_${type}_press_call_shortcut"
+
+    /** Human readable label of that shortcut. */
+    fun callShortcutNameKey(bud: String, type: String) = "${bud}_${type}_press_call_shortcut_name"
+
+    /** Key of the UI state maps for the call profile, e.g. `left_single_call`. */
+    fun callStateKey(bud: String, type: String) = "${bud}_${type}_call"
 }

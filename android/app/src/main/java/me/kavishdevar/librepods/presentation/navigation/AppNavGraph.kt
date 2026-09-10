@@ -22,6 +22,8 @@ import me.kavishdevar.librepods.presentation.screens.AdaptiveStrengthScreen
 import me.kavishdevar.librepods.presentation.screens.AirPodsSettingsRoute
 import me.kavishdevar.librepods.presentation.screens.AppSettingsScreen
 import me.kavishdevar.librepods.presentation.screens.CallControlScreen
+import me.kavishdevar.librepods.presentation.screens.CallCustomScreen
+import me.kavishdevar.librepods.presentation.screens.CallStemPressActionScreen
 import me.kavishdevar.librepods.presentation.screens.EqualizerRoute
 import me.kavishdevar.librepods.presentation.screens.HeadTrackingScreen
 import me.kavishdevar.librepods.presentation.screens.HearingAidAdjustmentsScreen
@@ -102,6 +104,7 @@ fun AppNavGraph(
                                 navigateToVersion = { navigate(Screen.VersionInfo) },
                                 navigateToTroubleshooting = { navigate(Screen.Troubleshooting) },
                                 navigateToCallControlScreen = { navigate(Screen.CallControl(it)) },
+                                navigateToCallCustom = { navigate(Screen.CallCustom) },
                                 navigateToMicrophoneSettings = { navigate(Screen.MicrophoneSettings) },
                             )
                         }
@@ -253,6 +256,27 @@ fun AppNavGraph(
                                         )
                                     )
                                 }
+                            )
+                        }
+
+                    Screen.CallCustom ->
+                        NavEntry(screen) {
+                            if (!airPodsViewModel.isReady) LoadingScreen()
+                            CallCustomScreen(
+                                viewModel = airPodsViewModel,
+                                navigateToCallStemPress = { bud, type ->
+                                    navigate(Screen.CallStemPress(bud, type))
+                                }
+                            )
+                        }
+
+                    is Screen.CallStemPress ->
+                        NavEntry(screen) {
+                            if (!airPodsViewModel.isReady) LoadingScreen()
+                            CallStemPressActionScreen(
+                                viewModel = airPodsViewModel,
+                                bud = screen.bud,
+                                typeKey = screen.type
                             )
                         }
 

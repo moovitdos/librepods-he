@@ -35,6 +35,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 fun CallControlSettings(
     flipped: Boolean,
     navigateToCallControlScreen: (action: String) -> Unit,
+    navigateToCallCustom: () -> Unit,
 ) {
     val pressOnceText = stringResource(R.string.press_once)
     val pressTwiceText = stringResource(R.string.press_twice)
@@ -62,6 +63,13 @@ fun CallControlSettings(
             name = hangUpText,
             description = doublePressAction,
             onClick = { navigateToCallControlScreen(hangUpText) }
+        )
+
+        // Per-bud press once / press twice actions during calls
+        StyledListItem(
+            name = stringResource(R.string.call_custom),
+            description = stringResource(R.string.call_custom_description),
+            onClick = navigateToCallCustom
         )
 
 //        StyledListItem(
