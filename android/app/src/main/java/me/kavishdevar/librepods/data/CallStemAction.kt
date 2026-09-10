@@ -40,6 +40,10 @@ enum class CallStemAction {
     /** The phone toggles the microphone mute. */
     MUTE,
 
+    /** The phone raises / lowers the call volume. */
+    VOLUME_UP,
+    VOLUME_DOWN,
+
     /** The phone starts the shortcut stored under [StemPressPrefs.callShortcutKey]. */
     LAUNCH_SHORTCUT;
 

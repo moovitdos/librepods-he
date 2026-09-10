@@ -27,6 +27,10 @@ enum class StemAction {
     DIGITAL_ASSISTANT,
     CYCLE_NOISE_CONTROL_MODES,
 
+    /** Raise / lower the volume (media volume, or the call volume during a call). */
+    VOLUME_UP,
+    VOLUME_DOWN,
+
     /**
      * Start the shortcut the user picked with the system shortcut chooser
      * (a MacroDroid macro, a Tasker task, an app, a contact, ...). The shortcut

@@ -59,6 +59,8 @@ private val CALL_ACTION_ORDER = listOf(
     CallStemAction.BUILT_IN,
     CallStemAction.END_CALL,
     CallStemAction.MUTE,
+    CallStemAction.VOLUME_UP,
+    CallStemAction.VOLUME_DOWN,
     CallStemAction.LAUNCH_SHORTCUT,
 )
 
@@ -92,10 +94,11 @@ fun CallCustomScreen(
     ) {
         Spacer(modifier = Modifier.height(topPadding))
 
+        ScreenDescription(stringResource(R.string.call_custom_screen_description))
+
         for (bud in StemPressPrefs.BUDS) {
             StyledList(
-                title = stringResource(stemBudTitle(bud)),
-                description = if (bud == StemPressPrefs.LEFT) stringResource(R.string.call_custom_screen_description) else null
+                title = stringResource(stemBudTitle(bud))
             ) {
                 for (type in StemPressPrefs.CALL_TYPES) {
                     val typeKey = StemPressPrefs.typeKey(type)
@@ -161,6 +164,7 @@ fun CallStemPressActionScreen(
                     CallStemAction.BUILT_IN -> stringResource(R.string.call_action_built_in_description)
                     CallStemAction.END_CALL -> stringResource(R.string.call_action_end_description)
                     CallStemAction.MUTE -> stringResource(R.string.call_action_mute_description)
+                    CallStemAction.VOLUME_UP, CallStemAction.VOLUME_DOWN -> null
                     CallStemAction.LAUNCH_SHORTCUT ->
                         shortcutName ?: stringResource(R.string.stem_action_launch_shortcut_description)
                 }

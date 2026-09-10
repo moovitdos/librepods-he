@@ -409,7 +409,7 @@
     <!-- Call Controls -> Customize: press once / press twice during calls, per bud -->
     <string name="call_custom">Customize</string>
     <string name="call_custom_description">Your own press once / press twice actions during an active call, per stem</string>
-    <string name="call_custom_title">Customize during a call</string>
+    <string name="call_custom_title">Customize</string>
     <string name="call_custom_screen_description">Applies once a call is connected. While ringing, the AirPods always keep their built-in behaviour (press once answers, press twice declines). A press left on “Built-in” keeps doing exactly what Call Controls says, even when the other stem customizes it.</string>
     <string name="call_action_built_in">Built-in, per Call Controls</string>
     <string name="call_action_built_in_description">Mutes or hangs up as set in Call Controls</string>
@@ -435,7 +435,9 @@
     <string name="stem_action_built_in">Built-in behaviour, handled by the AirPods themselves</string>
     <string name="stem_action_launch_shortcut">Launch shortcut</string>
     <string name="stem_action_launch_shortcut_named">Shortcut: %1$s</string>
-    <string name="stem_action_launch_shortcut_description">Run a shortcut from any app: a MacroDroid macro, a Tasker task, an app, a contact…</string>
+    <string name="stem_action_launch_shortcut_description">MacroDroid, Tasker, apps and more</string>
+    <string name="stem_volume_up">Volume up</string>
+    <string name="stem_volume_down">Volume down</string>
     <string name="stem_shortcut_title">Shortcut</string>
     <string name="stem_shortcut_description">Runs on the phone whenever this press reaches it.</string>
     <string name="stem_shortcut_none">No shortcut chosen yet</string>

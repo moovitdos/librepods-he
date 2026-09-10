@@ -1306,6 +1306,8 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 
             CallStemAction.END_CALL -> stemEndCall()
             CallStemAction.MUTE -> toggleCallMute()
+            CallStemAction.VOLUME_UP -> adjustStemVolume(AudioManager.ADJUST_RAISE)
+            CallStemAction.VOLUME_DOWN -> adjustStemVolume(AudioManager.ADJUST_LOWER)
             CallStemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type, duringCall = true)
         }
     }
@@ -1369,7 +1371,21 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 })
             }
 
+            StemAction.VOLUME_UP -> adjustStemVolume(AudioManager.ADJUST_RAISE)
+            StemAction.VOLUME_DOWN -> adjustStemVolume(AudioManager.ADJUST_LOWER)
             StemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type)
+        }
+    }
+
+    /** Raises / lowers the media volume, or the call volume while a call is active. */
+    private fun adjustStemVolume(direction: Int) {
+        try {
+            val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+            val stream = if (isInCall) AudioManager.STREAM_VOICE_CALL else AudioManager.STREAM_MUSIC
+            audioManager.adjustStreamVolume(stream, direction, AudioManager.FLAG_SHOW_UI)
+            Log.d(TAG, "Stem volume: direction=$direction stream=$stream")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to adjust volume", e)
         }
     }
 

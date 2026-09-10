@@ -408,7 +408,7 @@
     <!-- בקרת שיחות -> התאמה אישית: לחיצה אחת / כפולה בזמן שיחה, לכל אוזניה -->
     <string name="call_custom">התאמה אישית</string>
     <string name="call_custom_description">פעולות משלכם ללחיצה אחת וכפולה בזמן שיחה פעילה, לכל ידית</string>
-    <string name="call_custom_title">התאמה אישית בשיחה</string>
+    <string name="call_custom_title">התאמה אישית</string>
     <string name="call_custom_screen_description">חל מרגע שהשיחה מחוברת. בזמן צלצול האוזניות תמיד שומרות על ההתנהגות המובנית (לחיצה אחת עונה, לחיצה כפולה דוחה). לחיצה שנשארת על ״מובנה״ ממשיכה לעשות בדיוק מה שנקבע בבקרת שיחות, גם כשהידית השנייה מותאמת.</string>
     <string name="call_action_built_in">מובנה, לפי בקרת שיחות</string>
     <string name="call_action_built_in_description">משתיק או מנתק לפי בקרת שיחות</string>
@@ -434,7 +434,9 @@
     <string name="stem_action_built_in">התנהגות מובנית, מטופלת באוזניות עצמן</string>
     <string name="stem_action_launch_shortcut">הפעלת קיצור דרך</string>
     <string name="stem_action_launch_shortcut_named">קיצור דרך: %1$s</string>
-    <string name="stem_action_launch_shortcut_description">הפעלת קיצור דרך מכל אפליקציה: מאקרו של MacroDroid, משימה של Tasker, אפליקציה, איש קשר…</string>
+    <string name="stem_action_launch_shortcut_description">MacroDroid, Tasker, אפליקציות ועוד</string>
+    <string name="stem_volume_up">הגברת עוצמת שמע</string>
+    <string name="stem_volume_down">הנמכת עוצמת שמע</string>
     <string name="stem_shortcut_title">קיצור דרך</string>
     <string name="stem_shortcut_description">מופעל בטלפון בכל פעם שהלחיצה הזאת מגיעה אליו.</string>
     <string name="stem_shortcut_none">עדיין לא נבחר קיצור דרך</string>

@@ -93,12 +93,12 @@ The AirPods only forward a press type when it is *customized*; a press left at i
 
 | Action | What happens |
 |---|---|
-| Play/Pause, Next track, Previous track, Listening Mode, Digital Assistant | The phone performs it (the AirPods no longer handle the press themselves). |
+| Play/Pause, Next track, Previous track, Volume up, Volume down, Listening Mode, Digital Assistant | The phone performs it (the AirPods no longer handle the press themselves). Volume acts on the media volume, or on the call volume during a call. |
 | **Launch shortcut** | Opens the system shortcut chooser; pick a MacroDroid macro, a Tasker task, an app, a contact… That shortcut is started on every press. |
 
 Every customized press sends the broadcast, whatever its action. Notes:
 
-- While a call rings, press once and press twice always keep the AirPods' built-in behaviour (answer, decline). Once the call is connected they follow *Call Controls*: by default the AirPods handle them themselves (mute, hang up) and your stem settings come back when the call ends. *Call Controls → Customize* gives each stem its own press once / press twice action for the active call: *Built-in* (the AirPods' behaviour, re-created by the phone whenever the other stem is customized), *Hang up via the phone*, *Mute / unmute via the phone* (toggles the microphone; not guaranteed on every device) or *Launch shortcut*. Press three times and press and hold keep the normal settings throughout.
+- While a call rings, press once and press twice always keep the AirPods' built-in behaviour (answer, decline). Once the call is connected they follow *Call Controls*: by default the AirPods handle them themselves (mute, hang up) and your stem settings come back when the call ends. *Call Controls → Customize* gives each stem its own press once / press twice action for the active call: *Built-in* (the AirPods' behaviour, re-created by the phone whenever the other stem is customized), *Hang up via the phone*, *Mute / unmute via the phone* (toggles the microphone; not guaranteed on every device), *Volume up* / *Volume down* or *Launch shortcut*. Press three times and press and hold keep the normal settings throughout.
 - Customizing a press type applies to both stems at once at the AirPods level, so e.g. left press once = shortcut also makes the phone perform the right stem's press once (Play/Pause by default).
 - Starting a shortcut from the background needs the *Display over other apps* permission LibrePods already asks for.
 

@@ -75,10 +75,25 @@ private val ACTION_ORDER = listOf(
     StemAction.PLAY_PAUSE,
     StemAction.NEXT_TRACK,
     StemAction.PREVIOUS_TRACK,
+    StemAction.VOLUME_UP,
+    StemAction.VOLUME_DOWN,
     StemAction.CYCLE_NOISE_CONTROL_MODES,
     StemAction.DIGITAL_ASSISTANT,
     StemAction.LAUNCH_SHORTCUT,
 )
+
+/** Explanatory text for a whole screen, placed above its sections (same look as a list description). */
+@Composable
+internal fun ScreenDescription(text: String) {
+    val m3eEnabled = LocalDesignSystem.current == DesignSystem.Material
+    Text(
+        text = text,
+        style = if (m3eEnabled) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodySmallEmphasized,
+        color = MaterialTheme.colorScheme.onBackground.copy(if (m3eEnabled) 0.8f else 0.6f),
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+}
 
 /**
  * Opens the system shortcut chooser (ACTION_CREATE_SHORTCUT, the same list MacroDroid,
