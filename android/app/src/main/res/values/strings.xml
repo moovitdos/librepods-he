@@ -405,4 +405,11 @@
     <string name="troubleshooting_log_content">Log Content</string>
     <string name="troubleshooting_share_log_file">Share log file</string>
     <string name="troubleshooting_share">Share</string>
+
+    <!-- Stem press -> automation apps (MacroDroid / Tasker) -->
+    <string name="stem_action_automation">Automation (MacroDroid / Tasker)</string>
+    <string name="stem_action_automation_description">Does nothing on the phone, only notifies automation apps</string>
+    <string name="stem_press_broadcast_title">Broadcast for automation apps</string>
+    <string name="stem_press_broadcast_description">Every press that reaches the phone sends a broadcast with the action below. Use the “Intent Received” trigger in MacroDroid or the “Intent Received” event in Tasker.</string>
+    <string name="stem_press_broadcast_extras" translatable="false">type = single / double / triple / long\nbud = left / right\naction = CYCLE_NOISE_CONTROL_MODES / DIGITAL_ASSISTANT / AUTOMATION_ONLY / …</string>
 </resources>

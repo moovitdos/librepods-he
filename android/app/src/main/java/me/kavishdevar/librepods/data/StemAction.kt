@@ -25,7 +25,15 @@ enum class StemAction {
     PREVIOUS_TRACK,
     NEXT_TRACK,
     DIGITAL_ASSISTANT,
-    CYCLE_NOISE_CONTROL_MODES;
+    CYCLE_NOISE_CONTROL_MODES,
+
+    /**
+     * Do nothing on the phone. The press is still announced to automation apps
+     * (MacroDroid, Tasker, Automate, ...) through the
+     * [me.kavishdevar.librepods.data.AirPodsNotifications.STEM_PRESS] broadcast,
+     * which is sent for every press that reaches the phone regardless of the action.
+     */
+    AUTOMATION_ONLY;
     companion object {
         fun fromString(action: String): StemAction? {
             return entries.find { it.name == action }

@@ -404,4 +404,10 @@
     <string name="troubleshooting_log_content">תוכן היומן</string>
     <string name="troubleshooting_share_log_file">שתף קובץ יומן</string>
     <string name="troubleshooting_share">שתף</string>
+
+    <!-- לחיצת ידית -> אפליקציות אוטומציה (MacroDroid / Tasker) -->
+    <string name="stem_action_automation">אוטומציה (MacroDroid / Tasker)</string>
+    <string name="stem_action_automation_description">לא מבצע כלום בטלפון, רק מודיע לאפליקציות אוטומציה</string>
+    <string name="stem_press_broadcast_title">שידור לאפליקציות אוטומציה</string>
+    <string name="stem_press_broadcast_description">כל לחיצה שמגיעה לטלפון שולחת broadcast עם ה-action שלמטה. ב-MacroDroid השתמשו בטריגר ״Intent Received״, וב-Tasker באירוע ״Intent Received״.</string>
 </resources>

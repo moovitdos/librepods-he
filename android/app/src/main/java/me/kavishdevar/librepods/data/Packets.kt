@@ -85,6 +85,20 @@ class AirPodsNotifications {
         const val DISCONNECT_RECEIVERS = "me.kavishdevar.librepods.DISCONNECT_RECEIVERS"
         const val EQ_DATA = "me.kavishdevar.librepods.HEADPHONE_ACCOMMODATION"
         const val AIRPODS_INFORMATION_UPDATED = "me.kavishdevar.librepods.AIRPODS_INFORMATION_UPDATED"
+
+        /**
+         * Public broadcast for automation apps (MacroDroid "Intent Received" trigger,
+         * Tasker "Intent Received" event, ...). Sent for every stem press that the
+         * AirPods forward to the phone, i.e. every press type that is customized.
+         *
+         * Extras: [STEM_PRESS_EXTRA_TYPE] = single | double | triple | long,
+         * [STEM_PRESS_EXTRA_BUD] = left | right,
+         * [STEM_PRESS_EXTRA_ACTION] = name of the configured [StemAction].
+         */
+        const val STEM_PRESS = "me.kavishdevar.librepods.STEM_PRESS"
+        const val STEM_PRESS_EXTRA_TYPE = "type"
+        const val STEM_PRESS_EXTRA_BUD = "bud"
+        const val STEM_PRESS_EXTRA_ACTION = "action"
     }
 
     class EarDetection {

@@ -50,6 +50,7 @@ import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.bluetooth.AACPManager
+import me.kavishdevar.librepods.data.AirPodsNotifications
 import me.kavishdevar.librepods.data.StemAction
 import me.kavishdevar.librepods.presentation.components.ListItemOrientation
 import me.kavishdevar.librepods.presentation.components.StyledButton
@@ -116,6 +117,18 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
                 },
                 enabled = state.isPremium
             )
+
+            StyledListItem(
+                name = stringResource(R.string.stem_action_automation),
+                description = stringResource(R.string.stem_action_automation_description),
+                selected = longPressAction == StemAction.AUTOMATION_ONLY,
+                onClick = {
+                    viewModel.setLongPressAction(
+                        name,
+                        StemAction.AUTOMATION_ONLY
+                    )
+                }
+            )
         }
 
         if (!state.isPremium) {
@@ -134,6 +147,22 @@ fun LongPress(viewModel: AirPodsViewModel, name: String, navigateToPurchase: () 
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        if (longPressAction == StemAction.AUTOMATION_ONLY) {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            StyledList(
+                title = stringResource(R.string.stem_press_broadcast_title),
+                description = stringResource(R.string.stem_press_broadcast_description)
+            ) {
+                StyledListItem(
+                    name = AirPodsNotifications.STEM_PRESS,
+                    description = stringResource(R.string.stem_press_broadcast_extras),
+                    onClick = null,
+                    orientation = ListItemOrientation.Vertical
+                )
+            }
         }
 
         if (longPressAction == StemAction.CYCLE_NOISE_CONTROL_MODES) {

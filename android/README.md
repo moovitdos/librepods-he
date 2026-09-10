@@ -79,6 +79,28 @@ adb shell am start -a android.intent.action.VIEW -d librepods://noise-control/tr
 adb shell am broadcast -a me.kavishdevar.librepods.SET_ANC_MODE --ei mode 3
 ```
 
+### Using stem presses as triggers in other apps
+
+Every stem press that the AirPods forward to the phone is announced with the broadcast `me.kavishdevar.librepods.STEM_PRESS` (only while the LibrePods service is running), with these string extras:
+
+| Extra    | Values                                                                                                   |
+|----------|----------------------------------------------------------------------------------------------------------|
+| `type`   | `single`, `double`, `triple`, `long`                                                                     |
+| `bud`    | `left`, `right`                                                                                          |
+| `action` | what LibrePods itself does for that press, e.g. `CYCLE_NOISE_CONTROL_MODES`, `DIGITAL_ASSISTANT`, `AUTOMATION_ONLY` |
+
+The AirPods only forward a press type when it is *customized*; a press left at its stock behaviour is handled inside the AirPods and the phone never sees it. In the app, *Press and Hold AirPods → Left / Right* offers **Automation (MacroDroid / Tasker)**: that press then does nothing on the phone except sending the broadcast. Press-and-hold set to *Listening Mode* or *Digital Assistant* sends the broadcast too, in addition to its normal job.
+
+- **MacroDroid**: trigger *Intent Received* with action `me.kavishdevar.librepods.STEM_PRESS`; add the extras `bud` and `type` as parameters to react to one stem only, or read them into variables.
+- **Tasker**: profile with the event *System → Intent Received*, action `me.kavishdevar.librepods.STEM_PRESS`; the extras become the variables `%type`, `%bud` and `%action`.
+- **Automate**: *Broadcast receive* block with the same action.
+
+To check that presses arrive, watch the log while pressing:
+
+```bash
+adb logcat | grep "Broadcast stem press"
+```
+
 ### A few notes
 
 - Due to recent AirPods' firmware upgrades, you must enable `Off listening mode` to switch to `Off`. This is because in this mode, loud sounds are not reduced.

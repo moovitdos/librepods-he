@@ -1095,16 +1095,17 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             override fun onStemPressReceived(stemPress: ByteArray) {
 
                 val (stemPressType, bud) = aacpManager.parseStemPressResponse(stemPress)
+                val action = getActionFor(bud, stemPressType)
 
                 Log.d(
                     "AirPodsParser",
-                    "Stem press received: $stemPressType on $bud, cameraActive: $cameraActive, cameraAction: ${config.cameraAction}"
+                    "Stem press received: $stemPressType on $bud, action: $action, cameraActive: $cameraActive, cameraAction: ${config.cameraAction}"
                 )
+                // Always tell automation apps first; what LibrePods itself does is independent.
+                broadcastStemPress(stemPressType, bud, action)
                 if (cameraActive && config.cameraAction != null && stemPressType == config.cameraAction) {
                         Runtime.getRuntime().exec(arrayOf("su", "-c", "input keyevent 27"))
                 } else {
-                    val action = getActionFor(bud, stemPressType)
-                    Log.d("AirPodsParser", "$bud $stemPressType action: $action")
                     action?.let { executeStemAction(it) }
                 }
             }
@@ -1197,6 +1198,36 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         }
     }
 
+    /**
+     * Announces a stem press to automation apps (MacroDroid "Intent Received",
+     * Tasker "Intent Received", Automate "Broadcast receive", ...).
+     * Sent implicitly on purpose: those apps listen with a receiver registered at
+     * runtime, which still gets implicit broadcasts on Android 8+.
+     */
+    private fun broadcastStemPress(
+        type: StemPressType,
+        bud: AACPManager.Companion.StemPressBudType,
+        action: StemAction?
+    ) {
+        val typeName = when (type) {
+            StemPressType.SINGLE_PRESS -> "single"
+            StemPressType.DOUBLE_PRESS -> "double"
+            StemPressType.TRIPLE_PRESS -> "triple"
+            StemPressType.LONG_PRESS -> "long"
+        }
+        val budName = when (bud) {
+            AACPManager.Companion.StemPressBudType.LEFT -> "left"
+            AACPManager.Companion.StemPressBudType.RIGHT -> "right"
+        }
+        sendBroadcast(Intent(AirPodsNotifications.STEM_PRESS).apply {
+            addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+            putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_TYPE, typeName)
+            putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_BUD, budName)
+            putExtra(AirPodsNotifications.STEM_PRESS_EXTRA_ACTION, action?.name ?: "")
+        })
+        Log.d(TAG, "Broadcast stem press: $typeName $budName (${action?.name})")
+    }
+
     private fun executeStemAction(action: StemAction) {
         when (action) {
             StemAction.defaultActions[StemPressType.SINGLE_PRESS] -> {
@@ -1227,6 +1258,11 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 sendBroadcast(Intent("me.kavishdevar.librepods.SET_ANC_MODE").apply {
                     setPackage(packageName)
                 })
+            }
+
+            StemAction.AUTOMATION_ONLY -> {
+                // The STEM_PRESS broadcast already went out in onStemPressReceived.
+                Log.d("AirPodsParser", "Automation-only action, nothing to do on the phone")
             }
         }
     }
