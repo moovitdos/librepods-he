@@ -40,6 +40,9 @@ enum class CallStemAction {
     /** The phone toggles the microphone mute. */
     MUTE,
 
+    /** Cycle the listening (noise control) mode, like the normal stem action. */
+    CYCLE_NOISE_CONTROL_MODES,
+
     /** The phone raises / lowers the call volume. */
     VOLUME_UP,
     VOLUME_DOWN,

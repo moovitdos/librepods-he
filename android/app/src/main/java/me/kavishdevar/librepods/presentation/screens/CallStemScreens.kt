@@ -59,6 +59,7 @@ private val CALL_ACTION_ORDER = listOf(
     CallStemAction.BUILT_IN,
     CallStemAction.END_CALL,
     CallStemAction.MUTE,
+    CallStemAction.CYCLE_NOISE_CONTROL_MODES,
     CallStemAction.VOLUME_UP,
     CallStemAction.VOLUME_DOWN,
     CallStemAction.LAUNCH_SHORTCUT,
@@ -164,6 +165,7 @@ fun CallStemPressActionScreen(
                     CallStemAction.BUILT_IN -> stringResource(R.string.call_action_built_in_description)
                     CallStemAction.END_CALL -> stringResource(R.string.call_action_end_description)
                     CallStemAction.MUTE -> stringResource(R.string.call_action_mute_description)
+                    CallStemAction.CYCLE_NOISE_CONTROL_MODES,
                     CallStemAction.VOLUME_UP, CallStemAction.VOLUME_DOWN -> null
                     CallStemAction.LAUNCH_SHORTCUT ->
                         shortcutName ?: stringResource(R.string.stem_action_launch_shortcut_description)

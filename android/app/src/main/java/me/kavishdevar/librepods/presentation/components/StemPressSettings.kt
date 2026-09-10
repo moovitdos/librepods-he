@@ -61,6 +61,7 @@ fun callStemActionLabel(action: CallStemAction, shortcutName: String?): String =
     CallStemAction.BUILT_IN -> stringResource(R.string.call_action_built_in)
     CallStemAction.END_CALL -> stringResource(R.string.call_action_end)
     CallStemAction.MUTE -> stringResource(R.string.call_action_mute)
+    CallStemAction.CYCLE_NOISE_CONTROL_MODES -> stringResource(R.string.noise_control)
     CallStemAction.VOLUME_UP -> stringResource(R.string.stem_volume_up)
     CallStemAction.VOLUME_DOWN -> stringResource(R.string.stem_volume_down)
     CallStemAction.LAUNCH_SHORTCUT ->

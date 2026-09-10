@@ -1306,6 +1306,12 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
 
             CallStemAction.END_CALL -> stemEndCall()
             CallStemAction.MUTE -> toggleCallMute()
+            CallStemAction.CYCLE_NOISE_CONTROL_MODES -> {
+                Log.d(TAG, "Cycling noise control modes (call)")
+                sendBroadcast(Intent("me.kavishdevar.librepods.SET_ANC_MODE").apply {
+                    setPackage(packageName)
+                })
+            }
             CallStemAction.VOLUME_UP -> adjustStemVolume(AudioManager.ADJUST_RAISE)
             CallStemAction.VOLUME_DOWN -> adjustStemVolume(AudioManager.ADJUST_LOWER)
             CallStemAction.LAUNCH_SHORTCUT -> launchStemShortcut(bud, type, duringCall = true)

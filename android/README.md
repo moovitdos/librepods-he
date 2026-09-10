@@ -87,7 +87,7 @@ Every stem press that the AirPods forward to the phone is announced with the bro
 |----------|----------------------------------------------------------------------------------------------------------|
 | `type`   | `single`, `double`, `triple`, `long`                                                                     |
 | `bud`    | `left`, `right`                                                                                          |
-| `action` | what LibrePods itself does for that press, e.g. `PLAY_PAUSE`, `CYCLE_NOISE_CONTROL_MODES`, `DIGITAL_ASSISTANT`, `LAUNCH_SHORTCUT`; during an active call the call action (`BUILT_IN`, `END_CALL`, `MUTE`, `LAUNCH_SHORTCUT`) |
+| `action` | what LibrePods itself does for that press, e.g. `PLAY_PAUSE`, `CYCLE_NOISE_CONTROL_MODES`, `DIGITAL_ASSISTANT`, `LAUNCH_SHORTCUT`; during an active call the call action (`BUILT_IN`, `END_CALL`, `MUTE`, `CYCLE_NOISE_CONTROL_MODES`, `VOLUME_UP`, `VOLUME_DOWN`, `LAUNCH_SHORTCUT`) |
 
 The AirPods only forward a press type when it is *customized*; a press left at its built-in behaviour is handled inside the AirPods and the phone never sees it. In the app, *Stem Presses → Left / Right* lists press once, press twice, press three times and press and hold for that stem, each with these actions:
 
@@ -98,7 +98,7 @@ The AirPods only forward a press type when it is *customized*; a press left at i
 
 Every customized press sends the broadcast, whatever its action. Notes:
 
-- While a call rings, press once and press twice always keep the AirPods' built-in behaviour (answer, decline). Once the call is connected they follow *Call Controls*: by default the AirPods handle them themselves (mute, hang up) and your stem settings come back when the call ends. *Call Controls → Customize* gives each stem its own press once / press twice action for the active call: *Built-in* (the AirPods' behaviour, re-created by the phone whenever the other stem is customized), *Hang up via the phone*, *Mute / unmute via the phone* (toggles the microphone; not guaranteed on every device), *Volume up* / *Volume down* or *Launch shortcut*. Press three times and press and hold keep the normal settings throughout.
+- While a call rings, press once and press twice always keep the AirPods' built-in behaviour (answer, decline). Once the call is connected they follow *Call Controls*: by default the AirPods handle them themselves (mute, hang up) and your stem settings come back when the call ends. *Call Controls → Customize* gives each stem its own press once / press twice action for the active call: *Built-in* (the AirPods' behaviour, re-created by the phone whenever the other stem is customized), *Hang up via the phone*, *Mute / unmute via the phone* (toggles the microphone; not guaranteed on every device), *Listening Mode* (cycle), *Volume up* / *Volume down* or *Launch shortcut*. Press three times and press and hold keep the normal settings throughout.
 - Customizing a press type applies to both stems at once at the AirPods level, so e.g. left press once = shortcut also makes the phone perform the right stem's press once (Play/Pause by default).
 - Starting a shortcut from the background needs the *Display over other apps* permission LibrePods already asks for.
 
