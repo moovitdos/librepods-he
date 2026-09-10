@@ -101,6 +101,12 @@ To check that presses arrive, watch the log while pressing:
 adb logcat | grep "Broadcast stem press"
 ```
 
+To test the macro itself without touching the AirPods, fake a press from `adb` (same action and extras LibrePods sends):
+
+```bash
+adb shell am broadcast -a me.kavishdevar.librepods.STEM_PRESS --es type long --es bud left --es action AUTOMATION_ONLY
+```
+
 ### A few notes
 
 - Due to recent AirPods' firmware upgrades, you must enable `Off listening mode` to switch to `Off`. This is because in this mode, loud sounds are not reduced.
