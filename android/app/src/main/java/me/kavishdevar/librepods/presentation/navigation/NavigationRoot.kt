@@ -65,8 +65,8 @@ fun NavigationRoot(
         Screen.HearingAidAdjustments -> stringResource(R.string.adjustments)
         Screen.HearingProtection -> stringResource(R.string.hearing_protection)
         is Screen.StemBud -> stringResource(stemBudTitle(currentScreen.bud))
-        is Screen.StemPress -> stringResource(stemBudTitle(currentScreen.bud)) + " · " +
-                stringResource(stemPressTypeTitle(currentScreen.type))
+        // Press type only: "Left stem · Press once" gets truncated on narrow screens.
+        is Screen.StemPress -> stringResource(stemPressTypeTitle(currentScreen.type))
         Screen.OpenSourceLicenses -> stringResource(R.string.open_source_licenses)
         Screen.Purchase -> stringResource(R.string.unlock_advanced_features)
         Screen.Rename -> stringResource(R.string.name)
