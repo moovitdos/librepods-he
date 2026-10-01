@@ -48,7 +48,7 @@ your change carefully before pushing instead of relying on the build to find it.
    `android: ...`, `ci: ...`, `android/README: ...`. Mention the upstream issue
    number when fixing a known upstream bug.
 6. **Push `hebrew-translation`** - this starts the build. Then follow
-   `references/build-and-signing.md`: wait, download the two artifacts, check the
+   `references/ci-and-signing.md`: wait, download the two artifacts, check the
    signing certificate.
 7. **Install and verify on a device** before calling it a build - see
    `references/device-testing.md`. A green CI run only proves it compiles; the
@@ -140,7 +140,7 @@ thinking about who can call them.
 
 ## Reference files
 
-- `references/build-and-signing.md` - the workflow, secrets, creating a key for
+- `references/ci-and-signing.md` - the workflow, secrets, creating a key for
   your own fork, downloading and verifying artifacts, reading failures, known CI
   breakages, local-build requirements.
 - `references/localization.md` - where strings go, Compose scope rules, what must
